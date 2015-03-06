@@ -104,6 +104,7 @@ classdef STBData < handle
         plotMom(obj, range)
         plotForces(obj, range)
         plotAcc(obj, arg1, arg2)
+        newObj = range(rangeIdx)
         
     % end
     
