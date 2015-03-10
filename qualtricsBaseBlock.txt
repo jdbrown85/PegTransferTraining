@@ -1,19 +1,62 @@
+
 [[Block:%1$s]]
 [[ED:Video%2$d:%3$s]]
 [[Question:DB]]
 [[ID:%2$d]]
-Watch the video below. Then rate the subject's performance on the GEARS domains using the scales provided in the following questions.<br>
-<div align="center">
-<iframe width="420" height="315" align="middle" src="https://www.youtube.com/embed/%3$s" frameborder="0" allowfullscreen=""></iframe>
-</div>
+Watch the entire video below. Then rate the subject's performance on the GEARS domains using the scales provided in the following questions.<br />
+<br />
+&nbsp;
+<div align="center"><iframe allowfullscreen="" frameborder="0" height="420" id="ytplayer" src="https://www.youtube.com/embed/%3$s?&amp;modestbranding=1&amp;rel=0&amp;showinfo=1&amp;" type="text/html" width="560"></iframe></div>
 
 [[Question:MC:SingleAnswer:Horizontal]]
-[[ID:%2$d.1]]
+[[ID:Q%2$d.1]]
 <b>Depth Perception: </b>
 [[Choices]]
-Constantly overshoots target, wide swings, slow to correct<br /> 1
+Constantly overshoots target, wide swings, slow to correct<br/> 1
 2
-Some overshooting or missing of target, but quick to correct<br /> 3
+Some overshooting or missing of target, but quick to correct<br/> 3
 4
-Accurately directs instruments in the correct plane to target<br /> 5
+Accurately directs instruments in the correct plane to target<br/> 5
+
+
+[[Question:MC:SingleAnswer:Horizontal]]
+[[ID:Q%2$d.2]]
+<b>Bimanual Dexterity: </b>
+[[Choices]]
+Uses only one hand, ignores nondominant hand, poor coordination<br/> 1 
+2
+Uses both hands, but does not optimize interaction between hands<br/> 3
+4
+Expertly uses both hands in a complementary way to provide best exposure<br/>5
+
+[[Question:MC:SingleAnswer:Horizontal]]
+[[ID:Q%2$d.3]]
+<b>Efficiency: </b>
+[[Choices]]
+Inefficient efforts; many uncertain movements; constantly changing focus or persisting without progress<br/> 1
+2
+Slow, but planned movements are reasonably organized<br/> 3
+4
+Confident, efficient and safe conduct, maintains focus on task, fluid progression<br /> 5
+
+[[Question:MC:SingleAnswer:Horizontal]]
+[[ID:Q%2$d.4]]
+<b>Force Sensitivity: </b>
+[[Choices]]
+Rough moves, tears tissue, injures nearby structures, poor control, frequent suture breakage<br/> 1
+2
+Handles tissues reasonably well, minor trauma to adjacent tissue, rare suture breakage<br/> 3
+4
+Applies appropriate tension, negligible injury to adjacent structures, no suture breakage<br/> 5
+
+[[Question:MC:SingleAnswer:Horizontal]]
+[[ID:Q%2$d.5]]
+<b>Robotic Control: </b>
+[[Choices]]
+Consistently does not optimize view, hand position, or repeated collisions even with guidance<br /> 1
+2
+View is sometimes not optimal. Occasionally needs to relocate arms. Occasional collisions and obstruction of assistant<br /> 3
+4
+Controls camera and hand position optimally and independently. Minimal collisions or obstruction of assistant<br /> 5
+
 

@@ -15,6 +15,8 @@ classdef STBData < handle
         filename
         youtube
         youtube_short
+        score
+        rater
 	end
 
 	methods 
@@ -48,7 +50,7 @@ classdef STBData < handle
 		            		disp(['Loading: ' trialFiles(j).name])
 		            		% Load rawData, rating(not recorded yet) and
 		            		% youtube address from .mat
-                            load([dataDir '/' subjectDirs(i).name '/' trialFiles(j).name], 'rawData', 'youtube', 'youtube_short');
+                            load([dataDir '/' subjectDirs(i).name '/' trialFiles(j).name], 'rawData', 'youtube', 'youtube_short', 'score', 'rater');
                             
                             obj(k).filename = [dataDir '/' subjectDirs(i).name '/' trialFiles(j).name];
                             obj(k).youtube = youtube; %#ok<CPROP>
@@ -66,11 +68,14 @@ classdef STBData < handle
 		                    obj(k).subj_id = str2double(trialFiles(j).name(2:4));
 		                    obj(k).task_id = str2double(trialFiles(j).name(6));
 	                        
+                            obj(k).score = score;
+                            obj(k).rater = rater;
+                            
 	                        obj(k).index = k;
 	                        
 		                    k = k +1;
                             
-                            clear rawData youtube youtube_short
+                            clear rawData youtube youtube_short score rater
 						end
 					end
                 end

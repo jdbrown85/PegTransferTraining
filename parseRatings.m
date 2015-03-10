@@ -1,29 +1,32 @@
-function parseRatings(filename)
+function parseRatings(ratingFile, dataDir)
     
-    load blockCorr.mat
-    
-    [num, txt, raw] = xlsread(filename);
-    
-    dataDir = 'TestData';
-    subjectDirs = dir([dataDir '/Subject*']);
-    
-    for i = 1:length(subjectDirs)
-        trialFiles = dir([dataDir '/' subjectDirs(i).name  '/*.mat']);
-            for j = 1:length(trialFiles)
-                disp(['Loading: ' trialFiles(j).name])
-                load([dataDir '/' subjectDirs(i).name '/' trialFiles(j).name], 'rawData');
-                
-                if False % match between recorded answers and current trial name, else return NaN
-                    respondent = []; %get ratings from txt
-                    rating = []; %get ratings from num
-                else
-                    respondent = '';
-                    rating = NaN(1,5);
-                end
-                
-                save([dataDir '/' subjectDirs(i).name '/' trialFiles(j).name], 'rawData', 'respondent', 'rating');
+    if nargin == 1
+        dataDir = 'SavedData';
+    end
+    load([dataDir '/lookup.mat']);
+
+    [~, ~, raw] = xlsread(ratingFile);
+    ratedVideos = raw(3,strncmpi(raw(2,:), 'Video', 5));
+    newScore = cell2mat(raw(3:end, strncmpi(raw(1,:), 'Q', 1)));
+    newRater = raw(3:end, strcmpi(raw(1,:), 'Name'));
+
+    for i = 1:length(ratedVideos)
+        try
+            matVars = whos('-file', lookup(ratedVideos{i}));
             
+            if any(strcmpi({matVars.name}, 'rater')) 
+                load(lookup(ratedVideos{i}), 'score', 'rater');
+            else
+                score = [];
+                rater = [];
             end
+            
+            score = [score; newScore(:,(1:5)+(i-1)*5)];
+            rater = [rater; newRater];
+            save(lookup(ratedVideos{i}), 'score', 'rater', '-append');
+        catch
+            disp(['Trouble with Video' num2str(i)]);
+        end
     end
     
 end
