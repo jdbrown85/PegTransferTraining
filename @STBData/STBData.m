@@ -110,10 +110,6 @@ classdef STBData < handle
         plotForces(obj, range)
         plotAcc(obj, arg1, arg2)
         newObj = range(rangeIdx)
-        
-    % end
-    
-    % methods(Static)
 
     end
 

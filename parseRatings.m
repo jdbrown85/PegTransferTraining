@@ -1,5 +1,10 @@
 function parseRatings(ratingFile, dataDir)
-    
+%%PARSERATINGS parses .xls file created from .csv downloaded from qualtics 
+% website
+%   This only works with surveys generated using genSurvey.m
+%   If there are errors loading files, try regenerating the lookup.mat file using
+%   makeLookup.m in UtilityScripts
+
     if nargin == 1
         dataDir = 'SavedData';
     end
@@ -22,7 +27,7 @@ function parseRatings(ratingFile, dataDir)
             end
             
             score = [score; newScore(:,(1:5)+(i-1)*5)];
-            rater = [rater; newRater];
+            rater = {rater; newRater};
             save(lookup(ratedVideos{i}), 'score', 'rater', '-append');
         catch
             disp(['Trouble with Video' num2str(i)]);

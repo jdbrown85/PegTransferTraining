@@ -1,5 +1,6 @@
 function problemFiles = loadSubjectData(testDir, targetDir, subjects)
-% Reads the .csvs produced the the STB into the .mat format we need for analysis
+% Reads the .csv files produced by the the STB into the .mat format we need for analysis
+
 if nargin == 2
 	subjects = [];
 end
@@ -40,8 +41,10 @@ for i = 11:length(subjectDirs)
             disp('Adding placeholder youtube address, use addYoutube.m to finalize')
             youtube_short = '';
             youtube = ['youtu.be/' youtube_short];
+            score = [];
+            rater = {};
             disp('Saving...')
-            save([targetDir '/' subjectDirs{i} '/' fileName(1:end-4)], 'rawData', 'youtube', 'youtube_short');
+            save([targetDir '/' subjectDirs{i} '/' fileName(1:end-4)], 'rawData', 'youtube', 'youtube_short', 'score', 'rater');
         catch
             disp(['Problem with ' fileName])
             problemFiles{end+1} = fileName;
