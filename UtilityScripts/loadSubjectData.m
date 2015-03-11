@@ -1,4 +1,4 @@
-function problemFiles = loadSubjectData(testDir,targetDir, subjects)
+function problemFiles = loadSubjectData(testDir, targetDir, subjects)
 % Reads the .csvs produced the the STB into the .mat format we need for analysis
 if nargin == 2
 	subjects = [];
