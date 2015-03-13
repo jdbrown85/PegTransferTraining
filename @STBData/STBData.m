@@ -34,7 +34,7 @@ classdef STBData < handle
                 p.parse(varargin{:});
                 inputs = p.Results;
 
-                subjectDirs = subjectDirs(ismember(inputs.subject, subjFound));
+                subjectDirs = subjectDirs(ismember(subjFound, inputs.subject));
 
 	            for i = 1:length(subjectDirs)
 	            	nTrials(i) = length(dir([dataDir '/' subjectDirs(i).name '/*.mat']));

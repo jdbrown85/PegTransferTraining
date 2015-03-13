@@ -3,9 +3,9 @@ clearvars;
 dataDir = 'SavedData';
 subjectDirs = dir([dataDir '/Subject*']);
 
-redo = true;
+redo = false;
 
-for i = 6:length(subjectDirs)
+for i = 1:length(subjectDirs)
     trialFiles = dir([dataDir '/' subjectDirs(i).name  '/*.mat']);
         for j = 1:length(trialFiles)
             flag = true;

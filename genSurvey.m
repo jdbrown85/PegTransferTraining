@@ -11,7 +11,7 @@ f = fopen(filename, 'a+');
 baseSurvey = fileread('qualtricsBaseBlock.txt'); 
 
 % Load saved data to link to youtube
-data = STBData('SavedData', 'task', 1, 'subject', 3);
+data = STBData('SavedData');
 
 % Add header
 fprintf(f, '[[AdvancedFormat]]\n\n');
