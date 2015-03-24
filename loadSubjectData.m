@@ -22,7 +22,7 @@ end
 
 problemFiles = {};
 
-for i = 11:length(subjectDirs)
+for i = 1:length(subjectDirs)
 	trialFiles = dir([testDir '/' subjectDirs{i} '/*.csv']);
     disp(subjectDirs{i})
     mkdir([targetDir '/' subjectDirs{i}])

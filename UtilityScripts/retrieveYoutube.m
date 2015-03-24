@@ -14,7 +14,7 @@ problemFiles = {};
 for i = 1:length(subjectDirs)
     trialFiles = dir([dataDir '/' subjectDirs(i).name  '/*.mat']);
         for j = 1:length(trialFiles)
-            load([dataDir '/' subjectDirs(i).name '/' trialFiles(j).name], 'youtube_short');
+%             load([dataDir '/' subjectDirs(i).name '/' trialFiles(j).name], 'youtube_short');
             try
                 youtube_short = videos{2}{strncmpi(videos{1}, trialFiles(j).name,18)}; 
                 youtube = ['youtu.be/' youtube_short];
