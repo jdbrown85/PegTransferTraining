@@ -12,5 +12,5 @@ function [part] = make_xval_partition(n, n_folds)
 
 % YOUR CODE GOES HERE
 
-part_N = (1:n_folds)'*ones(1,ceil(n/n_folds));
+part_N = repmat((1:n_folds),1,ceil(n/n_folds));
 part = part_N(randperm(numel(part_N),n)); 

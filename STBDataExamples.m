@@ -1,5 +1,7 @@
 clearvars
 
+%% Loading Data
+
 % Load all data stored in the SavedData folder into STBData array
 data = STBData('SavedData');
 
@@ -30,6 +32,8 @@ data.task(1).subject(3)
 % List methods associated with STBData
 methods(data)
 
+%% Plotting
+clearvars
 % Plot forces, moments, and accelerations
 data(1).plotForces
 % Can also give a range (same for all plotting functions)
@@ -43,3 +47,16 @@ data(1).plotAcc
 
 %Plot single accelerometer
 data(1).plotAcc(1)
+
+%% Generating Surveys
+clearvars;
+% Load task #1 data
+data = STBData('SavedData', 'task', 1);
+
+% Generate 10-trial partitions for survey
+part = make_xval_partition(numel(data), floor(numel(data)/10));
+
+% Generate surveys
+for survey = unique(part)
+    genSurvey(data(part == survey), sprintf('Survey%02d.txt', survey));
+end
