@@ -54,7 +54,7 @@ clearvars;
 data = STBData('SavedData', 'task', 1);
 
 % Generate 10-trial partitions for survey
-part = make_xval_partition(numel(data), floor(numel(data)/10));
+part = make_xval_partition(numel(data), ceil(numel(data)/10));
 
 % Generate surveys
 for survey = unique(part)
