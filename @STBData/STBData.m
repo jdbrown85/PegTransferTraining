@@ -17,6 +17,7 @@ classdef STBData < handle
         youtube_short
         score
         rater
+        fam
 	end
 
 	methods 
