@@ -22,7 +22,7 @@ end
 
 problemFiles = {};
 
-for i = 11:length(subjectDirs)
+for i = 1:length(subjectDirs)
 	trialFiles = dir([testDir '/' subjectDirs{i} '/*.csv']);
     disp(subjectDirs{i})
     mkdir([targetDir '/' subjectDirs{i}])
@@ -45,12 +45,12 @@ for i = 11:length(subjectDirs)
             rater = {};
             disp('Saving...')
             save([targetDir '/' subjectDirs{i} '/' fileName(1:end-4)], 'rawData', 'youtube', 'youtube_short', 'score', 'rater');
-        catch
+        catch ME
+            disp(ME.message);
             disp(['Problem with ' fileName])
             problemFiles{end+1} = fileName;
         end
         clear rawData
-
 	end
 
 end

@@ -28,6 +28,7 @@ function parseRatings(ratingFile, dataDir)
             
             score = [score; newScore(:,(1:5)+(i-1)*5)];
             rater = {rater; newRater};
+            
             save(lookup(ratedVideos{i}), 'score', 'rater', '-append');
         catch
             disp(['Trouble with Video' num2str(i)]);

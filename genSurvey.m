@@ -1,11 +1,11 @@
 function genSurvey(data, filename)
 
 % Delete and remake file
-% filename = '10Trial2.txt';
 if exist(filename, 'file')
     system(['rm ' filename]);
 end
 system(['touch ' filename]);
+
 % Open file in append mode
 f = fopen(filename, 'a+');
 
