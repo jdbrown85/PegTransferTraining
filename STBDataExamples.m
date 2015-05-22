@@ -1,3 +1,6 @@
+%% Don't run this entire script at once!
+return;
+
 %% Loading Data
 clearvars
 
@@ -81,3 +84,8 @@ end
 %% Parse ratings from completed survey
 
 parseRatings('STB_GEARS_Rating_T1_2nd_Round.xls')
+
+
+%% Loading new subject data
+
+loadSubjectData('NewData', 'SavedData', 37);

@@ -13,25 +13,26 @@ function parseRatings(ratingFile, dataDir)
     [~, ~, raw] = xlsread(ratingFile);
     ratedVideos = raw(3,strncmpi(raw(2,:), 'Video', 5));
     newScore = cell2mat(raw(3:end, strncmpi(raw(1,:), 'Q', 1)));
-    newRater = raw(3:end, strcmpi(raw(1,:), 'Name'));
+    newRater = raw(3:end, strcmpi(raw(2,:), 'ResponseID'));
 
     for i = 1:length(ratedVideos)
         try
             matVars = whos('-file', lookup(ratedVideos{i}));
             
-            if any(strcmpi({matVars.name}, 'rater')) 
+            if any(strcmpi({matVars.name}, 'rater'))
                 load(lookup(ratedVideos{i}), 'score', 'rater');
             else
                 score = [];
-                rater = [];
+                rater = {};
             end
             
-            score = [score; newScore(:,(1:5)+(i-1)*5)];
-            rater = {rater; newRater};
+            score = [score; newScore(~ismember(newRater, rater),(1:5)+(i-1)*5)];
+            rater = cat(1,rater, newRater{~ismember(newRater, rater)});
             
             save(lookup(ratedVideos{i}), 'score', 'rater', '-append');
-        catch
+        catch ME
             disp(['Trouble with Video' num2str(i)]);
+            disp(ME.message)
         end
     end
     

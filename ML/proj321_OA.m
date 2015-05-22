@@ -10,8 +10,8 @@ no = nf/2;
 trunc = floor(length(aX)/nf)*nf; % longest possible vector divisble by nf
 
 aX = aX(1:trunc); % truncate vector to length divisible by nf
-aY = aX(1:trunc);
-aZ = aX(1:trunc);
+aY = aY(1:trunc);
+aZ = aZ(1:trunc);
 
 x = buffer(aX(:), no); % 10-sample nonoverlapping frames of data
 y = buffer(aY(:), no);

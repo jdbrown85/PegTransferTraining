@@ -10,7 +10,7 @@ for i = 1:length(subjectDirs)
     trialFiles = dir([dataDir '/' subjectDirs(i).name  '/*.mat']);
         for j = 1:length(trialFiles)            
             score = [];
-            rater = [];
+            rater = {};
             save([dataDir '/' subjectDirs(i).name '/' trialFiles(j).name], 'score','rater', '-append');
         end
 end
