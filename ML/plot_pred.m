@@ -1,4 +1,5 @@
 function plot_pred(pred, ratings)
+
 domains = {'Depth Perception', 'Bimanual Dexterity', 'Efficiency', 'Force Sensitivity', 'Robotic Control'};
 nMetric = size(ratings,2);
 for i = 1:nMetric
@@ -20,8 +21,7 @@ hold on;
 plot(rPlot,'bo');
 plot( pred(idx),'rx')
 ylim([0 1.1*rPlot(end)]);
-set(gca,'XTickLabel','')
+set(gca,'XTickLabel','', 'Xtick', [])
 grid on;    
 end
-xlabel('Trials')
-legend('Manual Rating', 'Predicted Rating', 'location', 'southeast')
+% legend('Manual Rating', 'Predicted Rating', 'location', 'southeast')
