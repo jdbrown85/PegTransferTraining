@@ -1,7 +1,7 @@
 %% support vector regression test (from Sarah) converted for the STB data
 
 clearvars;
-addpath('lib');
+addpath('LIBSVM');
 addpath('glmnet_matlab');
 
 if ~exist('features.mat','file')
@@ -31,15 +31,12 @@ load test_part.mat
 features_val = features(test_part);
 features = features(~test_part);
 n = length(features);
-% n = 20;
 part = make_xval_partition(length(features), n);
 
 preds = [];
 [feature_vector, ratings] = featureVector(features);
 ratings = round(ratings);
 
-% feature_vector = feature_vector(:, var(feature_vector) > 0.001);
-k = 10;
 for fold = 1:n
     fprintf('Fold %03d: ', fold);
 
@@ -48,8 +45,6 @@ for fold = 1:n
     
     %% standardize data for svr
     [X, muX, sigmaX] = zscore(feature_train);  
-
-%     Xpca = X*coefs;
     
     % Build separate models for each grading metric
     nMetric = size(ratings, 2);
@@ -74,7 +69,6 @@ for fold = 1:n
     Xtest = bsxfun(@rdivide,bsxfun(@minus, feature_test, muX), sigmaX); 
     Xtest(isnan(Xtest)) = 0;
     
-%     disp('Making Prediction');
     predictions = zeros(size(feature_test,1), nMetric); 
     for i = 1:nMetric
         [predicted_label1, accuracy, prob_estimates] = svmpredict(ratings_test(:,i), Xtest, models1{i},'-q');
@@ -86,6 +80,7 @@ for fold = 1:n
         predictions3(:,i) = predicted_label3;
         predictions4(:,i) = predicted_label4;
     end
+    
     pred1(part == fold,:) = predictions1;
     pred2(part == fold,:) = predictions2;
     pred3(part == fold,:) = predictions3;

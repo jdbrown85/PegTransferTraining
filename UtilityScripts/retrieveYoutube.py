@@ -20,7 +20,10 @@ from oauth2client.tools import argparser, run_flow
 #   https://developers.google.com/youtube/v3/guides/authentication
 # For more information about the client_secrets.json file format, see:
 #   https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
-CLIENT_SECRETS_FILE = "UtilityScripts/client_secrets.json"
+if os.getcwd().split(os.sep)[-1] == "UtilityScripts":
+  CLIENT_SECRETS_FILE = "client_secrets.json"
+else: 
+  CLIENT_SECRETS_FILE = "UtilityScripts/client_secrets.json"
 
 # This variable defines a message to display if the CLIENT_SECRETS_FILE is
 # missing.
@@ -68,7 +71,10 @@ channels_response = youtube.channels().list(
 ).execute()
 
 # Open text file to write video ids
-recFile = open('youtube.txt', 'w')
+if os.getcwd().split(os.sep)[-1] == "UtilityScripts":
+  recFile = open('youtube.txt', 'w')
+else:
+  recFile = open('UtilityScripts/youtube.txt', 'w')
 
 for channel in channels_response["items"]:
   # From the API response, extract the playlist ID that identifies the list

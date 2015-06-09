@@ -1,8 +1,8 @@
-%% Don't run this entire script at once!
+%% Don't run this entire script at once! Just run each cell to see what it does
 return;
 
 %% Loading Data
-clearvars
+clearvars;
 
 % Load all data stored in the SavedData folder into STBData array
 data = STBData('SavedData');
@@ -88,4 +88,9 @@ parseRatings('STB_GEARS_Rating_T1_2nd_Round.xls')
 
 %% Loading new subject data
 
+% loadSubjectData(Unprocessed Data Dir, Dir to save processed data, subject
+% to load (omit if you want everthing));
+addpath UtilityScripts
 loadSubjectData('NewData', 'SavedData', 37);
+
+%% Adding 

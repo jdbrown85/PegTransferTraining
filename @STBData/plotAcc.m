@@ -5,11 +5,11 @@ for i = 1:length(obj)
     clf;
         if nargin == 1
             ax1 = subplot(3,1,1);
-            plot(obj(i).plot_time(1:100:end),obj(i).acc1(1:100:end,:));ylabel('Acc (g)');
+            plot(obj(i).plot_time(1:1:end),obj(i).acc1(1:1:end,:));ylabel('Acc (g)');
             ax2 = subplot(3,1,2);
-            plot(obj(i).plot_time(1:100:end),obj(i).acc2(1:100:end,:));ylabel('Acc (g)');
+            plot(obj(i).plot_time(1:1:end),obj(i).acc2(1:1:end,:));ylabel('Acc (g)');
             ax3 = subplot(3,1,3);
-            plot(obj(i).plot_time(1:100:end),obj(i).acc3(1:100:end,:));ylabel('Acc (g)');
+            plot(obj(i).plot_time(1:1:end),obj(i).acc3(1:1:end,:));ylabel('Acc (g)');
             linkaxes([ax1 ax2 ax3], 'x');
             axis tight
         elseif nargin == 2

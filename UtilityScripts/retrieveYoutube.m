@@ -1,6 +1,19 @@
-! python UtilityScripts/retrieveYoutube.py
+function retrieveYoutube(dataDir)
 
-f = fopen('youtube.txt');
+if nargin == 0
+    dataDir = 'SavedData';
+end
+
+[~, currentFolder, ~] = fileparts(pwd);
+
+if strcmp(currentFolder, 'UtilityScripts')
+    f = fopen('youtube.txt');
+    ! python retrieveYoutube.py
+else
+    f = fopen('UtilityScripts/youtube.txt');
+    ! python UtilityScripts/retrieveYoutube.py
+end
+
 videos = textscan(f, '%s %s', 'whitespace',',');
 for i = 1:length(videos{1})
     videos{1}{i}([10 16])= '-';
@@ -8,7 +21,6 @@ for i = 1:length(videos{1})
 end
 
 
-dataDir = 'SavedData';
 subjectDirs = dir([dataDir '/Subject*']);
 problemFiles = {};
 savedVideos = false(size(videos{1}));
@@ -41,4 +53,7 @@ if any(savedVideos ~= 1)
         disp(unsavedVideos{i});
     end
     
+end
+
+makeLookup(dataDir)
 end
