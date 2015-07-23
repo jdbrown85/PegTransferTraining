@@ -37,6 +37,7 @@ preds = [];
 [feature_vector, ratings] = featureVector(features);
 ratings = round(ratings);
 
+feature_pca = pca
 for fold = 1:n
     fprintf('Fold %03d: ', fold);
 
@@ -55,9 +56,9 @@ for fold = 1:n
     for i = 1:nMetric;
         fprintf('Metric %d ...', i);
         y = ratings_train(:,i); 
-        models1{i} = svmtrain(y, X, '-s 3 -t 0 -q'); 
+        models1{i} = svmtrain(y, X, '-s 0 -t 0 -q'); 
         models2{i} = cvglmnet(X,y, 'gaussian',opt);
-        models3{i} = fitrtree(X, y);
+        models3{i} = fitctree(X, y);
         models4{i} = fitcknn(X,y,'NumNeighbors',3);
         fprintf(repmat('\b', 1, 12));
     end

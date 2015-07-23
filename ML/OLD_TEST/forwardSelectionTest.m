@@ -78,7 +78,7 @@ if (nMetric == 5);
     hold on;
 end
 
-pred = svmXval(feature_vector(:,final_idx{i}), ratings(:,i));
+pred(:,i) = svmXval(feature_vector(:,final_idx{i}), ratings(:,i));
 [rPlot, idx] = sort(ratings(:,i));
 plot(rPlot,'bo');
 hold on;
