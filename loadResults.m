@@ -13,3 +13,4 @@ parseRatings('STB_GEARS_Rnd8.xls');
 parseRatings('STB_GEARS_Rnd9.xls');
 parseRatings('STB_GEARS_Rnd10.xls');
 parseRatings('STB_GEARS_Rnd11.xls');
+parseRatings('STB_GEARS_Rnd12.xls');

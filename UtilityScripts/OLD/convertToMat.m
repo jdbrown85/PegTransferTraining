@@ -1,6 +1,6 @@
 clearvars;
 
-testDir = '/Volumes/STB1/STB_Test_Data';
+testDir = '/Volumes/STB2/STB_Test_Data';
 testDirs = dir(testDir);
 subjectDirs = {};
 for i = 1:length(testDirs)
@@ -11,7 +11,7 @@ end
 
 problemFiles = {};
 
-for i = 11:length(subjectDirs)
+for i = 1:length(subjectDirs)
 	trialFiles = dir([testDir '/' subjectDirs{i} '/*.csv']);
     disp(subjectDirs{i})
     mkdir(['SavedData/' subjectDirs{i}])

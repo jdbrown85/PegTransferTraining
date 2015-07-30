@@ -72,7 +72,7 @@ function feat = staticFeatures(data)
         feat(k).std = extract_feature(@std, raw_features{:}); %compute standard dev of all features 
         feat(k).min = extract_feature(@min, raw_features{:}); %compute min of all features
         feat(k).max = extract_feature(@max, raw_features{:}); %compute max of all features 
-%         feat(k).max = extract_feature(@max, raw_features{:}); %compute max of all features
+        feat(k).max = extract_feature(@max, raw_features{:}); %compute max of all features
         feat(k).rms = extract_feature(@rms, raw_features{:}); %compute rms of all features
         feat(k).tss = extract_feature(@(x) sum(x.^2), raw_features{:}); %compute sum of squares of all features
 

@@ -1,8 +1,8 @@
-function [err, max_err, near] = check_err(pred, ratings)
+function [err, max_err, near] = check_err(pred, ratings, threshold)
 
 err = sqrt(mean((pred(:)- ratings(:)).^2));
 max_err = max(abs(pred(:) - ratings(:)));
-near = mean(abs(pred(:)-ratings(:)) < 1);
+near = mean(abs(pred(:)-ratings(:)) < threshold);
 
 fprintf('%f & %f & %f \\\\ \\hline \n', err, max_err, near);
-fprintf('RMSE: %f, MAX: %f, FRAC WITHIN 1: %f \n', err, max_err, near);
+fprintf('RMSE: %f, MAX: %f, FRAC WITHIN %d: %f \n', err, max_err, threshold, near);

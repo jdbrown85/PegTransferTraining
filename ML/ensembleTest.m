@@ -5,8 +5,10 @@ addpath('LIBSVM');
 addpath('glmnet_matlab');
 
 if ~exist('features.mat','file')
-    data = STBData('SavedData', 'task', 1);
-    data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
+    if ~exist('data')
+        data = STBData('SavedData', 'task', 1);
+        data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
+    end
     
     num = xlsread('DemographicSurvey.xls');
     subjects = num(1:end, 5);
@@ -37,7 +39,7 @@ preds = [];
 [feature_vector, ratings] = featureVector(features);
 ratings = round(ratings);
 
-feature_pca = pca
+% feature_pca = pca
 for fold = 1:n
     fprintf('Fold %03d: ', fold);
 
@@ -97,29 +99,31 @@ end
 pred = (pred1 + pred2 + pred3 + pred4)/4;
 pred(isnan(pred)) = 1;
 
+TotThresh = 3;
 fprintf('Total Err: \n');
 fprintf('Ensemble: ');
-check_err(pred, ratings);
+check_err(pred, ratings, TotThresh);
 fprintf('SVR: ');
-check_err(pred1, ratings);
+check_err(pred1, ratings, TotThresh);
 fprintf('CVGLMNET: ');
-check_err(pred2, ratings);
+check_err(pred2, ratings, TotThresh);
 fprintf('Regression Tree: ');
-check_err(pred3, ratings);
+check_err(pred3, ratings, TotThresh);
 fprintf('KNN: ');
-check_err(pred4, ratings);
+check_err(pred4, ratings, TotThresh);
 
+IndThresh = 1;
 fprintf('Ensemble Metric Error: \n');
 fprintf('Depth Perception: ');
-check_err(pred(:,1), ratings(:,1));
+check_err(pred(:,1), ratings(:,1), IndThresh);
 fprintf('Bimanual Dexterity: ');
-check_err(pred(:,2), ratings(:,2));
+check_err(pred(:,2), ratings(:,2), IndThresh);
 fprintf('Efficiency: ');
-check_err(pred(:,3), ratings(:,3));
+check_err(pred(:,3), ratings(:,3), IndThresh);
 fprintf('Force Sensitivity: ');
-check_err(pred(:,4), ratings(:,4));
+check_err(pred(:,4), ratings(:,4), IndThresh);
 fprintf('Robotic Control: ');
-check_err(pred(:,5), ratings(:,5));
+check_err(pred(:,5), ratings(:,5), IndThresh);
 
 [feature_val_vec, ratings_val] = featureVector(features_val);
 [X, muX, sigmaX] = zscore(feature_vector);  
@@ -146,17 +150,17 @@ pred_val(isnan(pred_val)) = 1;
 
 fprintf('Final Error: \n');
 fprintf('Ensemble: ');
-check_err(pred_val, ratings_val);
+check_err(pred_val, ratings_val, IndThresh);
 fprintf('Depth Perception: ');
-check_err(pred_val(:,1), ratings_val(:,1));
+check_err(pred_val(:,1), ratings_val(:,1), IndThresh);
 fprintf('Bimanual Dexterity: ');
-check_err(pred_val(:,2), ratings_val(:,2));
+check_err(pred_val(:,2), ratings_val(:,2), IndThresh);
 fprintf('Efficiency: ');
-check_err(pred_val(:,3), ratings_val(:,3));
+check_err(pred_val(:,3), ratings_val(:,3), IndThresh);
 fprintf('Force Sensitivity: ');
-check_err(pred_val(:,4), ratings_val(:,4));
+check_err(pred_val(:,4), ratings_val(:,4), IndThresh);
 fprintf('Robotic Control: ');
-check_err(pred_val(:,5), ratings_val(:,5));
+check_err(pred_val(:,5), ratings_val(:,5), IndThresh);
 
 figure(1);clf;
 plot_pred(pred, ratings);
@@ -164,7 +168,7 @@ plot_pred(pred, ratings);
 figure(2);clf;
 plot_pred(pred_val, ratings_val);
 
-save('results.mat', 'ratings', 'ratings_val', ...
+save('resultsSQRTLog10.mat', 'ratings', 'ratings_val', ...
     'pred_val', 'pred_val1', 'pred_val2', 'pred_val3', 'pred_val4',...
     'pred', 'pred1', 'pred2', 'pred3', 'pred4');
 %% PCA Check
