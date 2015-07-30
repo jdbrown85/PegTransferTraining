@@ -1,4 +1,6 @@
 function [err, max_err, near] = check_err(pred, ratings)
+% Function to print current error metrics, also prints out latex to make reports
+% easier.
 
 err = sqrt(mean((pred(:)- ratings(:)).^2));
 max_err = max(abs(pred(:) - ratings(:)));
