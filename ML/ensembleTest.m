@@ -5,11 +5,21 @@ addpath('LIBSVM');
 addpath('glmnet_matlab');
 
 if ~exist('features.mat','file')
+<<<<<<< HEAD
     if ~exist('data')
         data = STBData('SavedData', 'task', 1);
         data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
     end
+=======
+
+    % Load data for all subjects and trials, task #1
+    data = STBData('SavedData', 'task', 1);
+
+    % Remove any trials that has errors in reading score (bug should be fixed)
+    data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
+>>>>>>> origin/master
     
+    % Add demographic survey familiarity data into data obj
     num = xlsread('DemographicSurvey.xls');
     subjects = num(1:end, 5);
     fam = num(1:end, 11);
@@ -18,29 +28,51 @@ if ~exist('features.mat','file')
         data(i).fam = fam(subjects==data(i).subj_id);
     end
     
+    % Remove any trials that have not been scored yet
     data = data(~cellfun(@isempty, {data.score}));
     
+    % Extract features from data obj, use oldStaticFeatures to get Sara's
     disp('Extracting Features...')
     features = staticFeatures(data);
+<<<<<<< HEAD
     features = featurePCA(features);
+=======
+
+    % Save features into .mat so you don't have to do this every time
+>>>>>>> origin/master
     save('features.mat', 'features');
 else
+    % If a features.mat file exists, load that instead
     disp('Loading Features...')
     load features.mat;
     features = features(~cellfun(@isempty,{features.gears}));
 end
-load test_part.mat
-%% obtain feature and rating matrices
+
+% Load partition to split data into test and validation sets
+if exist('test_part.mat','file')
+    load test_part.mat
+else
+    test_part = make_xval_partition(length(features), 10);
+    test_part = test_part == 10;
+end
+
+% Split dataset into testing and validation
 features_val = features(test_part);
 features = features(~test_part);
+
+% Create xval partition for testing set
 n = length(features);
+n = 10;
 part = make_xval_partition(length(features), n);
 
 preds = [];
 [feature_vector, ratings] = featureVector(features);
 ratings = round(ratings);
 
+<<<<<<< HEAD
 % feature_pca = pca
+=======
+>>>>>>> origin/master
 for fold = 1:n
     fprintf('Fold %03d: ', fold);
 
@@ -54,22 +86,25 @@ for fold = 1:n
     nMetric = size(ratings, 2);
     models = cell(1,nMetric);
 
-    opt = glmnetSet;
-    opt.alpha = 1;
     for i = 1:nMetric;
         fprintf('Metric %d ...', i);
         y = ratings_train(:,i); 
-        models1{i} = svmtrain(y, X, '-s 0 -t 0 -q'); 
-        models2{i} = cvglmnet(X,y, 'gaussian',opt);
-        models3{i} = fitctree(X, y);
+        % LIBSVM SVR
+        models1{i} = svmtrain(y, X, '-s 3 -t 2 -q'); 
+        % Elastic net using GLMNET
+        models2{i} = cvglmnet(X,y, 'gaussian');
+        % Regression tree
+        models3{i} = fitrtree(X, y);
+        % KNN 
         models4{i} = fitcknn(X,y,'NumNeighbors',3);
         fprintf(repmat('\b', 1, 12));
     end
 
-    %% predict labels for test data
+    % split out testing trials
     feature_test = feature_vector(part == fold,:);
     ratings_test = ratings(part == fold,:);
 
+    % Standardize training data
     Xtest = bsxfun(@rdivide,bsxfun(@minus, feature_test, muX), sigmaX); 
     Xtest(isnan(Xtest)) = 0;
     
@@ -97,6 +132,7 @@ for fold = 1:n
     predictions5 = [];
 end
 
+% Average predictions together
 pred = (pred1 + pred2 + pred3 + pred4)/4;
 pred(isnan(pred)) = 1;
 
@@ -126,12 +162,13 @@ check_err(pred(:,4), ratings(:,4), IndThresh);
 fprintf('Robotic Control: ');
 check_err(pred(:,5), ratings(:,5), IndThresh);
 
+% Run entire testing dataset against validation set
 [feature_val_vec, ratings_val] = featureVector(features_val);
 [X, muX, sigmaX] = zscore(feature_vector);  
 for i = 1:nMetric;
     y = ratings(:,i); 
     models1{i} = svmtrain(y, X, '-s 3 -q'); 
-    models2{i} = cvglmnet(X, y, 'gaussian', opt);
+    models2{i} = cvglmnet(X, y, 'gaussian');
     models3{i} = fitrtree(X, y);
     models4{i} = fitcknn(X,y,'NumNeighbors',3);
 end
@@ -172,14 +209,4 @@ plot_pred(pred_val, ratings_val);
 save('resultsSQRTLog10.mat', 'ratings', 'ratings_val', ...
     'pred_val', 'pred_val1', 'pred_val2', 'pred_val3', 'pred_val4',...
     'pred', 'pred1', 'pred2', 'pred3', 'pred4');
-%% PCA Check
-% 
-% [~, score] = pca(feature_vector);
-% r = round(mean(ratings,2));
-% figure(2);clf;
-% 
-% hold on
-% colormap lines
-% for i = 1:5
-%     scatter(score(r==i, 2), score(r==i, 3));
-% end
+

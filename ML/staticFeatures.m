@@ -55,7 +55,7 @@ function feat = staticFeatures(data)
 		fAcc1Prod = acc1.*fMag;
 		fAcc2Prod = acc3.*fMag;
 		
-		% orienation features
+		% orientation features
 
         % find orientation from accelerometer
         [r1, p1] = acc_orientation(data(t).acc1);
