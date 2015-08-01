@@ -1,6 +1,6 @@
 function pred = svmXval(feature_vector, ratings)
 
-n = 50;
+n = length(feature_vector);
 part = make_xval_partition(size(feature_vector,1), n);
 
 pred = zeros(size(ratings));

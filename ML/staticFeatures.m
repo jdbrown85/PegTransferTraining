@@ -83,11 +83,11 @@ function feat = staticFeatures(data)
         feat(k).total_time = data(t).duration; %compute total time of trial
         feat(k).time = (find(fMag>0.25,1,'last') - find(fMag>0.25, 1))/3000; %compute active trial time (based on force reading)
         
-        feat(k).sqrt_total_time = sqrt(data(1).plot_time(end)); % compute sqrt(time)
-        feat(k).sqrt_time = sqrt((find(fMag>0.25,1,'last') - find(fMag>0.25, 1))/3000);
+        feat(k).sqrt_total_time = sqrt(feat(k).total_time); % compute sqrt(time)
+        feat(k).sqrt_time = sqrt(feat(k).time);
         
-        feat(k).log_total_time = log10(data(1).plot_time(end));
-        feat(k).log_time = log10((find(fMag>0.25,1,'last') - find(fMag>0.25, 1))/3000);
+        feat(k).log_total_time = log10(feat(k).total_time);
+        feat(k).log_time = log10(feat(k).time);
         % add features for idle time at beginning
         % add feature for percentage of time active/idle
         
@@ -135,9 +135,9 @@ function feat = staticFeatures(data)
             feat(k).gears = data(t).score';
         else
             for i = 1:size(data(t).score,1)
-                feat(k).gears = data(t).score(i,:)'; % if rated by more than 1 rater, treat as individual observation
-                k = k+1;
-                feat(k) = feat(k-1); % copies previous features over
+                feat(k).gears = mean(data(t).score',2); % if rated by more than 1 rater, treat as individual observation
+%                 k = k+1;
+%                 feat(k) = feat(k-1); % copies previous features over
             end
         end
         

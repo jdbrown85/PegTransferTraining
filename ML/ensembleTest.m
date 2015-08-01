@@ -22,6 +22,7 @@ if ~exist('features.mat','file')
     
     disp('Extracting Features...')
     features = staticFeatures(data);
+    features = featurePCA(features);
     save('features.mat', 'features');
 else
     disp('Loading Features...')
