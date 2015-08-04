@@ -69,8 +69,8 @@ for fold = 1:n
         feature_test = selectfeature_vector(part == fold,:);
         ratings_test = ratings(part == fold,:);
         predictions = zeros(size(feature_test,1), nMetric);
-        
-        [X, muX, sigmaX] = zscore(feature_test); 
+        feature_train = selectfeature_vector(part ~= fold,:);
+        [X, muX, sigmaX] = zscore(feature_train); 
 
         % Standardize training data
         Xtest = bsxfun(@rdivide,bsxfun(@minus, feature_test, muX), sigmaX); 
@@ -144,7 +144,7 @@ end
 
 for i = 1:nMetric
     selectfeature_val_vec = feature_val_vec(:,selectFeatures{i});
-    [X, muX, sigmaX] = zscore(selectfeature_val_vec);
+    [X, muX, sigmaX] = zscore(feature_vector(:,selectFeatures{i}));
     Xtest = bsxfun(@rdivide,bsxfun(@minus, selectfeature_val_vec, muX), sigmaX); 
     Xtest(isnan(Xtest)) = 0;
     [pred_val1(:,i), accuracy, prob_estimates] = svmpredict(ratings_val(:,i), Xtest, models1{i},'-q');
@@ -176,7 +176,7 @@ plot_pred(pred, ratings);
 figure(2);clf;
 plot_pred(pred_val, ratings_val);
 
-save('resultsSQRTLog10.mat', 'ratings', 'ratings_val', ...
+save('resultsSQRTLog10Select.mat', 'ratings', 'ratings_val', ...
     'pred_val', 'pred_val1', 'pred_val2', 'pred_val3', 'pred_val4',...
     'pred', 'pred1', 'pred2', 'pred3', 'pred4');
 
