@@ -4,42 +4,14 @@ clearvars;
 addpath('LIBSVM');
 addpath('glmnet_matlab');
 
-if ~exist('features.mat','file')
-    if ~exist('data')
-        data = STBData('SavedData', 'task', 1);
-        data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
-    end
-
-    % Load data for all subjects and trials, task #1
-    data = STBData('SavedData', 'task', 1);
-
-    % Remove any trials that has errors in reading score (bug should be fixed)
-    data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
-    
-    % Add demographic survey familiarity data into data obj
-    num = xlsread('DemographicSurvey.xls');
-    subjects = num(1:end, 5);
-    fam = num(1:end, 11);
-    
-    for i = 1:length(data)
-        data(i).fam = fam(subjects==data(i).subj_id);
-    end
-    
-    % Remove any trials that have not been scored yet
-    data = data(~cellfun(@isempty, {data.score}));
-    
-    % Extract features from data obj, use oldStaticFeatures to get Sara's
-    disp('Extracting Features...')
-    features = staticFeatures(data);
-
-    % Save features into .mat so you don't have to do this every time
-
-    save('features.mat', 'features');
+if ~exist('SelectFeatures.mat','file')
+    disp('Quitting EnsembleTest. Please run FeatureSelection.m')
+    break
 else
     % If a features.mat file exists, load that instead
     disp('Loading Features...')
     load features.mat;
-    features = features(~cellfun(@isempty,{features.gears}));
+    load SelectFeatures.mat;
 end
 
 % Load partition to split data into test and validation sets
@@ -61,22 +33,21 @@ part = make_xval_partition(length(features), n);
 
 preds = [];
 [feature_vector, ratings] = featureVector(features);
-ratings = round(ratings);
+% ratings = round(ratings);
 
 for fold = 1:n
     fprintf('Fold %03d: ', fold);
-
-    feature_train = feature_vector(part ~= fold,:);
-    ratings_train = ratings(part ~= fold,:);
-    
-    %% standardize data for svr
-    [X, muX, sigmaX] = zscore(feature_train);  
     
     % Build separate models for each grading metric
     nMetric = size(ratings, 2);
     models = cell(1,nMetric);
 
     for i = 1:nMetric;
+        selectfeature_vector = feature_vector(:,selectFeatures{i});
+        feature_train = selectfeature_vector(part ~= fold,:);
+        ratings_train = ratings(part ~= fold,:);
+        % standardize data for svr
+        [X, muX, sigmaX] = zscore(feature_train);  
         fprintf('Metric %d ...', i);
         y = ratings_train(:,i); 
         % LIBSVM SVR
@@ -89,17 +60,18 @@ for fold = 1:n
         models4{i} = fitcknn(X,y,'NumNeighbors',3);
         fprintf(repmat('\b', 1, 12));
     end
-
-    % split out testing trials
-    feature_test = feature_vector(part == fold,:);
-    ratings_test = ratings(part == fold,:);
-
-    % Standardize training data
-    Xtest = bsxfun(@rdivide,bsxfun(@minus, feature_test, muX), sigmaX); 
-    Xtest(isnan(Xtest)) = 0;
     
     predictions = zeros(size(feature_test,1), nMetric); 
     for i = 1:nMetric
+        selectfeature_vector = feature_vector(:,selectFeatures{i});
+        % split out testing trials
+        feature_test = seclectfeature_vector(part == fold,:);
+        ratings_test = ratings(part == fold,:);
+
+        % Standardize training data
+        Xtest = bsxfun(@rdivide,bsxfun(@minus, feature_test, muX), sigmaX); 
+        Xtest(isnan(Xtest)) = 0;
+        
         [predicted_label1, accuracy, prob_estimates] = svmpredict(ratings_test(:,i), Xtest, models1{i},'-q');
         predicted_label2 = cvglmnetPredict(models2{i}, Xtest, 'lambda_1se');
         predicted_label3 = predict(models3{i}, Xtest);
@@ -154,8 +126,9 @@ check_err(pred(:,5), ratings(:,5), IndThresh);
 
 % Run entire testing dataset against validation set
 [feature_val_vec, ratings_val] = featureVector(features_val);
-[X, muX, sigmaX] = zscore(feature_vector);  
+  
 for i = 1:nMetric;
+    [X, muX, sigmaX] = zscore(feature_vector);
     y = ratings(:,i); 
     models1{i} = svmtrain(y, X, '-s 3 -q'); 
     models2{i} = cvglmnet(X, y, 'gaussian');
