@@ -79,6 +79,6 @@ for i=1:length(final_index)
     end
     total_index{i} = metric_index;
 end
-selectFeatures = total_test;
+selectFeatures = total_index;
 save('SelectFeatures.mat','selectFeatures')
 
