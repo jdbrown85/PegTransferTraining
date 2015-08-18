@@ -44,13 +44,16 @@ function ensembleTest(rounding,loocv)
     end
 
     % Load partition to split data into test and validation sets
-    if exist('test_part.mat','file')
-        load test_part.mat
-    else
-        test_part = make_xval_partition(length(features), 10);
-        test_part = test_part == 10;
-    end
+%     if exist('test_part.mat','file')
+%         load test_part.mat
+%     else
+%         test_part = make_xval_partition(length(features), 10);
+%         test_part = test_part == 10;
+%     end
 
+    [subTest,subTestInd,subTrain,subTrainInd] = make_subject_partition(4);
+    test_part = subTestInd;
+    
     % Split dataset into testing and validation
     features_val = features(test_part);
     features = features(~test_part);

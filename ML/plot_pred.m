@@ -19,7 +19,7 @@ function plot_pred(pred, ratings)
 
         [rPlot, idx] = sort(ratings(:,i));
         plot(rPlot,'bo');
-        plot( pred(idx),'rx')
+        plot( pred(idx,i),'rx')
         ylim([0 1.1*rPlot(end)]);
         set(gca,'XTickLabel','', 'Xtick', [])
         grid on;    

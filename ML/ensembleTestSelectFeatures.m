@@ -13,14 +13,19 @@ function ensembleTestSelectFeatures(rounding,loocv)
         load SelectFeatures.mat;
     end
 
-    % Load partition to split data into test and validation sets
+%     Load partition to split data into test and validation sets
     if exist('test_part.mat','file')
         load test_part.mat
+        test_part = subTestInd;
     else
-        test_part = make_xval_partition(length(features), 10);
-        test_part = test_part == 10;
+        [subTest,subTestInd,subTrain,subTrainInd] = make_subject_partition(4);
+        test_part = subTestInd;
+%         test_part = make_xval_partition(length(features), 10);
+%         test_part = test_part == 10;
     end
 
+    
+    
     % Split dataset into testing and validation
     features_val = features(test_part);
     features = features(~test_part);
@@ -37,7 +42,8 @@ function ensembleTestSelectFeatures(rounding,loocv)
     [feature_vector, ratings] = featureVector(features);
     
     if rounding
-        ratings = round(ratings);
+%         ratings = round(ratings);
+        ratings = floor(ratings);
     end
     
     for fold = 1:n
@@ -146,7 +152,8 @@ function ensembleTestSelectFeatures(rounding,loocv)
     end
     
     if rounding
-        ratings_val = round(ratings_val);
+%         ratings_val = round(ratings_val);
+        ratings_val = floor(ratings_val);
     end
     
     for i = 1:nMetric

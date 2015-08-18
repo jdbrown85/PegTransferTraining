@@ -18,7 +18,7 @@ else
 end
 
 subExcl = randperm(length(subjectFam),n);
-while size(subExcl,2)<n
+while size(subExcl,2)<n || any(ismember(subExcl,18))
     subExcl = randperm(length(subjectFam),n);
 end
 subTest = subjectFam(ismember(subjectFam(:,1),subExcl),:);
