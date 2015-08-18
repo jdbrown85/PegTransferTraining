@@ -63,7 +63,7 @@ function feat = staticFeatures(data)
         [r3, p3] = acc_orientation(data(t).acc3);
         
         raw_featuresABS = {data(t).forces(:,1),data(t).forces(:,2),data(t).forces(:,3),fMag,... %force data and their magnitude 
-            abs(acc1),abs(acc1H),abs(acc1L),abs(acc2),abs(acc2H),abs(acc2L),abs(acc3),abs(acc3H),abs(acc3L),... %acceleration data (total, high, low)
+            abs(acc1),abs(acc1H),abs(acc1L),abs(acc2),abs(acc2H),acc2L,abs(acc3),abs(acc3H),acc3L,... %acceleration data (total, high, low)
             abs(accProd),abs(fAcc1Prod),abs(fAcc2Prod),... %product features
             r1, p1, r2, p2, r3, p3, ... %orientation data (roll and pitch)
             diff(r1), diff(p1), diff(r2), diff(p2), diff(r3), diff(p3)}; %angular velocity data (roll rate and pitch rate)

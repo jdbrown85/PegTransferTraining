@@ -17,7 +17,7 @@ function [b,C,results,selectFeat,classifScore] = randomForestTrain(xVal,metric,l
             % If a features.mat file exists, load that instead
             disp('Loading Features...')
             load features.mat;
-            load SelectFeatures.mat;
+%             load SelectFeatures.mat;
         end
 
         % Load partition to split data into test and validation sets

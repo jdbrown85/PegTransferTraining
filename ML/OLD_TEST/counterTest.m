@@ -22,7 +22,7 @@ fMag = sqrt(sum(data(1).forces.^2,2));
 
 % d = acc1.*acc3;
 d = fMag.*acc1;
-thresh = 2000;
+thresh = 50;
 window = 600;
 overlap = 0;
 func = @(x)sum(x.^2);

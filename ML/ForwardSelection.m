@@ -34,6 +34,7 @@ kept_pred = [];
 final_idx = {};
 final_index = {};
 [feature_vector, ratings, index] = featureVector(features);
+ratings = floor(ratings);
 % % ratings = round(ratings);
 % ratings = sum(ratings,2);
 
