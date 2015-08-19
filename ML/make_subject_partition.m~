@@ -17,15 +17,11 @@ else
     load subjectFam.mat
 end
 
-for i = 1:n
-    samp = subjectFam(subjectFam(:,2)==i,:);
-    subExcl(i) = samp(randperm(length(samp),1),1);
-end
+subExcl = randperm(length(subjectFam),n);
 while size(subExcl,2)<n || any(ismember(subExcl,18))
-    for i = 1:n
-        samp = subjectFam(subjectFam(:,2)==i,:);
-        subExcl(i) = samp(randperm(length(samp),1),1);
-    end
+    for i = 1:4
+        subExcl(i) = 
+subExcl = randperm(length(subjectFam),n);
 end
 subTest = subjectFam(ismember(subjectFam(:,1),subExcl),:);
 subTestInd = ismember(subRaw,subExcl);
