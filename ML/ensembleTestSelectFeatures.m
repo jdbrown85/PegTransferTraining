@@ -1,8 +1,11 @@
 %% support vector regression test (from Sarah) converted for the STB data
-function ensembleTestSelectFeatures(rounding,loocv)
-    clearvars -except rounding loocv;
+function ensembleTestSelectFeatures(rounding,part,loocv,time)
+    tic
+    clearvars -except rounding loocv part time;
     addpath('LIBSVM');
     addpath('glmnet_matlab');
+    xvalfile = strcat('test_part',time,'.mat');
+    cvpartfile = strcat('cvpart',time,'.mat');
 
     if ~exist('SelectFeatures.mat','file')
         error('Quitting EnsembleTest. Please run FeatureSelection.m')
@@ -14,46 +17,72 @@ function ensembleTestSelectFeatures(rounding,loocv)
     end
 
 %     Load partition to split data into test and validation sets
-    if exist('test_part.mat','file')
-        load test_part.mat
-        test_part = subTestInd;
-    else
-        [subTest,subTestInd,subTrain,subTrainInd] = make_subject_partition(4);
-        test_part = subTestInd;
-%         test_part = make_xval_partition(length(features), 10);
-%         test_part = test_part == 10;
+    if part == 1
+        if exist(xvalfile,'file')
+            load(xvalfile)
+            test_part = subTestInd;
+        else
+            [subTest,subTestInd,subTrain,subTrainInd] = make_subject_partition(4);
+            test_part = subTestInd;
+            save(strcat('test_part',time,'.mat'),'subTest','subTestInd','subTrain','subTrainInd')
+        end
+        
+         % Split dataset into testing and validation
+        features_val = features(test_part);
+        features = features(~test_part);
+
+        % Create xval partition for testing set
+        if loocv
+            n = length(features);
+        else
+            n = 10;
+        end
+        part = make_xval_partition(length(features), n);
+
+        preds = [];
+        [feature_vector, ratings] = featureVector(features);
+    elseif part == 0
+        if exist(cvpartfile,'file')
+            load(cvpartfile)
+        else
+            cvpart = make_cv_partition(features)
+            save(strcat('cvpart',time,'.mat'),'cvpart')
+        end
     end
-
-    
-    
-    % Split dataset into testing and validation
-    features_val = features(test_part);
-    features = features(~test_part);
-
-    % Create xval partition for testing set
-    if loocv
-        n = length(features);
-    else
-        n = 10;
-    end
-    part = make_xval_partition(length(features), n);
-
-    preds = [];
-    [feature_vector, ratings] = featureVector(features);
+        
     
     if rounding
 %         ratings = round(ratings);
         ratings = floor(ratings);
     end
     
-    for fold = 1:n
+%     nMetric = size(ratings, 2);
+    nMetric = 5;
+    models = cell(1,nMetric);
+
+    for i = 1:nMetric;
+        if part == 0 
+            test_part = test(cvpart{i});
+            features_val = features(test_part);
+            features = features(~test_part);
+            if loocv
+            n = length(features);
+            else
+                n = 10;
+            end
+            part = make_xval_partition(length(features), n);
+
+            preds = [];
+            [feature_vector, ratings] = featureVector(features);
+        end
+        
+        for fold = 1:n
         fprintf('Fold %03d: ', fold);
 
-        % Build separate models for each grading metric
-        nMetric = size(ratings, 2);
-        models = cell(1,nMetric);
+        % Build separate models for each grading metri
 
-        for i = 1:nMetric;
+%         for i = 1:nMetric;
+                
             selectfeature_vector = feature_vector(:,selectFeatures{i});
             feature_train = selectfeature_vector(part ~= fold,:);
             ratings_train = ratings(part ~= fold,:);
@@ -70,10 +99,10 @@ function ensembleTestSelectFeatures(rounding,loocv)
             % KNN 
             models4{i} = fitcknn(X,y,'NumNeighbors',3);
             fprintf(repmat('\b', 1, 12));
-        end
+%         end
 
 
-        for i = 1:nMetric
+%         for i = 1:nMetric
 
             selectfeature_vector = feature_vector(:,selectFeatures{i});
             % split out testing trials
@@ -91,24 +120,25 @@ function ensembleTestSelectFeatures(rounding,loocv)
             predicted_label2 = cvglmnetPredict(models2{i}, Xtest, 'lambda_1se');
             predicted_label3 = predict(models3{i}, Xtest);
             predicted_label4 = predict(models4{i}, Xtest);
-            predictions1(:,i) = predicted_label1;
+            predictions1(:,i) = predicted_label1
             predictions2(:,i) = predicted_label2;
             predictions3(:,i) = predicted_label3;
             predictions4(:,i) = predicted_label4;
-        end
+%         end
 
-        pred1(part == fold,:) = predictions1;
-        pred2(part == fold,:) = predictions2;
-        pred3(part == fold,:) = predictions3;
-        pred4(part == fold,:) = predictions4;
+        pred1(part == fold,i) = predictions1;
+        pred2(part == fold,i) = predictions2;
+        pred3(part == fold,i) = predictions3;
+        pred4(part == fold,i) = predictions4;
         fprintf(repmat('\b', 1, 10));
         predictions1 = [];
         predictions2 = [];
         predictions3 = [];
         predictions4 = [];
         predictions5 = [];
+        end
     end
-
+    toc
     % Average predictions together
     pred = (pred1 + pred2 + pred3 + pred4)/4;
     pred(isnan(pred)) = 1;
@@ -140,9 +170,15 @@ function ensembleTestSelectFeatures(rounding,loocv)
     check_err(pred(:,5), ratings(:,5), IndThresh);
 
     % Run entire testing dataset against validation set
-    [feature_val_vec, ratings_val] = featureVector(features_val);
+    
 
     for i = 1:nMetric;
+        if part == 0 
+            test_part = test(cvpart{i});
+            features_val = features(test_part);
+            features = features(~test_part);
+            [feature_vector, ratings] = featureVector(features);
+        end
         [X, muX, sigmaX] = zscore(feature_vector(:,selectFeatures{i}));
         y = ratings(:,i); 
         models1{i} = svmtrain(y, X, '-s 3 -q'); 
@@ -157,6 +193,13 @@ function ensembleTestSelectFeatures(rounding,loocv)
     end
     
     for i = 1:nMetric
+        if part == 0 
+            test_part = test(cvpart{i});
+            features_val = features(test_part);
+            features = features(~test_part);
+            [feature_vector, ratings] = featureVector(features);
+        end
+        [feature_val_vec, ratings_val] = featureVector(features_val);
         selectfeature_val_vec = feature_val_vec(:,selectFeatures{i});
         [X, muX, sigmaX] = zscore(feature_vector(:,selectFeatures{i}));
         Xtest = bsxfun(@rdivide,bsxfun(@minus, selectfeature_val_vec, muX), sigmaX); 
@@ -202,7 +245,8 @@ function ensembleTestSelectFeatures(rounding,loocv)
         fileloocv = '10Fold';
     end
 
-    save(strcat('resultsSQRTLogPCA',fileround,fileloocv,'Select.mat'), 'ratings', 'ratings_val', ...
+    save(strcat('resultsSQRTLogPCA',fileround,fileloocv,'Select',time,'.mat'), 'ratings', 'ratings_val', ...
+        'models1','models2','models3','models4',...
         'pred_val', 'pred_val1', 'pred_val2', 'pred_val3', 'pred_val4',...
         'pred', 'pred1', 'pred2', 'pred3', 'pred4');
 end

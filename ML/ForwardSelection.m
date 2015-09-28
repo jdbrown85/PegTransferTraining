@@ -1,33 +1,62 @@
-
-clearvars;
+function ForwardSelection(rounding)
+clearvars -except rounding
 addpath('LIBSVM');
 addpath('glmnet_matlab');
 
-if ~exist('features.mat','file')
-    if ~exist('data')
-        data = STBData('SavedData', 'task', 1);
-        data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
+if rounding == 0 
+    if ~exist('featuresMed.mat','file')
+        if ~exist('data')
+            data = STBData('SavedData', 'task', 1);
+            data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
+        end
+
+        num = xlsread('DemographicSurvey.xls');
+        subjects = num(1:end, 5);
+        fam = num(1:end, 11);
+
+        for i = 1:length(data)
+            data(i).fam = fam(subjects==data(i).subj_id);
+        end
+
+        data = data(~cellfun(@isempty, {data.score}));
+
+        disp('Extracting Features...')
+        features = staticFeatures(data,rounding);
+        features = featurePCA(features);
+        save('featuresMed.mat', 'features');
+    else
+        disp('Loading Features...')
+        load featuresMed.mat;
+        features = features(~cellfun(@isempty,{features.gears}));
     end
-    
-    num = xlsread('DemographicSurvey.xls');
-    subjects = num(1:end, 5);
-    fam = num(1:end, 11);
-    
-    for i = 1:length(data)
-        data(i).fam = fam(subjects==data(i).subj_id);
+elseif rounding == 1
+    if ~exist('featuresMean.mat','file')
+        if ~exist('data')
+            data = STBData('SavedData', 'task', 1);
+            data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
+        end
+
+        num = xlsread('DemographicSurvey.xls');
+        subjects = num(1:end, 5);
+        fam = num(1:end, 11);
+
+        for i = 1:length(data)
+            data(i).fam = fam(subjects==data(i).subj_id);
+        end
+
+        data = data(~cellfun(@isempty, {data.score}));
+
+        disp('Extracting Features...')
+        features = staticFeatures(data,rounding);
+        features = featurePCA(features);
+        save('featuresMean.mat', 'features');
+    else
+        disp('Loading Features...')
+        load featuresMean.mat;
+        features = features(~cellfun(@isempty,{features.gears}));
     end
-    
-    data = data(~cellfun(@isempty, {data.score}));
-    
-    disp('Extracting Features...')
-    features = staticFeatures(data);
-    features = featurePCA(features);
-    save('features.mat', 'features');
-else
-    disp('Loading Features...')
-    load features.mat;
-    features = features(~cellfun(@isempty,{features.gears}));
 end
+
 
 preds = [];
 kept_pred = [];
@@ -81,5 +110,10 @@ for i=1:length(final_index)
     total_index{i} = metric_index;
 end
 selectFeatures = total_index;
-save('SelectFeatures.mat','selectFeatures')
+
+if rounding == 0
+    save('SelectFeaturesMed.mat','selectFeatures')
+elseif rounding == 1
+    save('SelectFeaturesMean.mat','selectFeatures')
+end
 

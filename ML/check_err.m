@@ -1,5 +1,5 @@
 
-function [err, max_err, near] = check_err(pred, ratings, threshold)
+function [err, max_err, near, exact] = check_err(pred, ratings, threshold)
 
 % Function to print current error metrics, also prints out latex to make reports
 
@@ -10,4 +10,4 @@ near = mean(abs(pred(:)-ratings(:)) <= threshold);
 exact = mean(abs(pred(:)-ratings(:)) == 0); 
 
 % fprintf('%f & %f & %f \\\\ \\hline \n', err, max_err, near);
-fprintf('RMSE: %f, MAX: %f, FRAC WITHIN %d: %f, Exact: %f \n', err, max_err, threshold, near, exact);
+% fprintf('RMSE: %f, MAX: %f, FRAC WITHIN %d: %f, Exact: %f \n', err, max_err, threshold, near, exact);

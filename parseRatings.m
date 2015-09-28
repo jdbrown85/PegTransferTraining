@@ -13,8 +13,11 @@ function parseRatings(ratingFile, dataDir)
     [~, ~, raw] = xlsread(ratingFile);
     ratedVideos = raw(3,strncmpi(raw(2,:), 'Video', 5));
     newScore = cell2mat(raw(3:end, strncmpi(raw(1,:), 'Q', 1)));
-    newRater = raw(3:end, strcmpi(raw(2,:), 'ResponseID'));
-
+%     newRater = raw(3:end, strcmpi(raw(2,:), 'ResponseID'));
+    newRater = raw(3:end, strcmpi(raw(2,:), 'Name'));
+    [y,i] = sort(newRater);
+    newScore = newScore(i,:);
+    newRater = y;
     for i = 1:length(ratedVideos)
         try
             matVars = whos('-file', lookup(ratedVideos{i}));

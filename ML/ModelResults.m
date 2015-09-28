@@ -1,123 +1,179 @@
-function ModelResults(select,nTrees)
-    clc;
-    clearvars -except select nTrees
-
-    filename1 = 'resultsSQRTLogPCARoundLOOCV';
-    filename2 = strcat('randForestLearner',num2str(nTrees),'Trees.mat');
-    if select
-        filename1 = strcat(filename1,'Select');
+function [exact_reg,exact_class,near_reg,near_class] = ModelResults(rounding,TrainTest,nTrees,time,icc)
+    close all;
+    clearvars -except rounding TrainTest nTrees time icc
+    
+    if rounding == 0
+        fileround = 'Med';
+        load featuresMed
+    elseif rounding == 1
+        fileround = 'Floor';
+        load featuresMean
+    end
+    
+    if TrainTest == 0
+        filepart = 'CVPart';
+        filename3 = strcat('cvpart',time,'.mat');
+    elseif TrainTest == 1
+        filepart = 'SubPart';
+        filename3 = strcat('test_part',time,'.mat');
     end
 
-    load(strcat(filename1,'.mat'));
-    
-    pred = floor(pred);
-    pred(pred<1) = 1;
-    pred_val = floor(pred_val);
-    pred_val(pred_val<1) = 1;
-    
-    IndThresh = 1;
-    fprintf('Ensemble Metric Error: \n');
-    fprintf('Depth Perception: ');
-    check_err(pred(:,1), ratings(:,1), IndThresh);
-    fprintf('Bimanual Dexterity: ');
-    check_err(pred(:,2), ratings(:,2), IndThresh);
-    fprintf('Efficiency: ');
-    check_err(pred(:,3), ratings(:,3), IndThresh);
-    fprintf('Force Sensitivity: ');
-    check_err(pred(:,4), ratings(:,4), IndThresh);
-    fprintf('Robotic Control: ');
-    check_err(pred(:,5), ratings(:,5), IndThresh);
+    filename1 = strcat('RegEnsembleSelect',fileround,filepart,time,'.mat');
+    filename2 = strcat('randForest',num2str(nTrees),'Trees',fileround,filepart,time,'.mat');
+   
+    load(filename3);
+    if TrainTest == 0
+        for i = 1:5
+            test_part = test(cvpart{i});
+            features_test = features(test_part);
+            features_train = features(~test_part);
+            [~, rate_train] = featureVector(features_train);
+            [~, rate_test] = featureVector(features_test);
+            ratings_train(:,i) = rate_train(:,i);
+            ratings_test(:,i) = rate_test(:,i);
+        end
+    elseif TrainTest == 1
+        test_part = subTestInd;
+        features_test = features(test_part);
+        features_train = features(~test_part);
+        [~, ratings_train] = featureVector(features_train);
+        [~, ratings_test] = featureVector(features_test);
+    end
 
-    fprintf('Final Error: \n');
-    fprintf('Ensemble: ');
-    check_err(pred_val, ratings_val, IndThresh);
-    fprintf('Depth Perception: ');
-    check_err(pred_val(:,1), ratings_val(:,1), IndThresh);
-    fprintf('Bimanual Dexterity: ');
-    check_err(pred_val(:,2), ratings_val(:,2), IndThresh);
-    fprintf('Efficiency: ');
-    check_err(pred_val(:,3), ratings_val(:,3), IndThresh);
-    fprintf('Force Sensitivity: ');
-    check_err(pred_val(:,4), ratings_val(:,4), IndThresh);
-    fprintf('Robotic Control: ');
-    check_err(pred_val(:,5), ratings_val(:,5), IndThresh);
+%     if select
+%         filename1 = strcat(filename1,'Select');
+%     end
+
+%     load(strcat(filename1,'.mat'));
+    load(filename1)
+    
+    pred_reg_train = floor(pred_train);
+    pred_reg_train(pred_reg_train<1) = 1;
+    pred_reg_test = floor(pred_test);
+    pred_reg_test(pred_reg_test<1) = 1;
     
     figure(1);clf;
-    plot_pred(pred, ratings);
+    plot_pred(pred_reg_train, ratings_train);
 
     figure(2);clf;
-    plot_pred(pred_val, ratings_val);
-
-    for i = 1:5
-        near(1,i) = mean(abs(pred(:,i)-ratings(:,i)) <= 1);
-        exact(1,i) = mean(abs(pred(:,i)-ratings(:,i)) == 0); 
-        
-        near_val(1,i) = mean(abs(pred_val(:,i)-ratings_val(:,i)) <= 1);
-        exact_val(1,i) = mean(abs(pred_val(:,i)-ratings_val(:,i)) == 0); 
-    end
+    plot_pred(pred_reg_test, ratings_test);
     
-    clearvars -except select nTrees near exact near_val exact_val
-    filename2 = strcat('randForestLearner',num2str(nTrees),'Trees.mat');
+    
     load(filename2)
     
+    clear pred_train pred_test
+    
     for i = 1:5
-        [predClass{i},classifScore] = models{i}.predict(feature_vector(:,maxIndex{i})); 
-        pred{i} = str2num(cell2mat(predClass{i}));
+        if TrainTest == 0
+            test_part = test(cvpart{i});
+            features_test = features(test_part);
+            features_train = features(~test_part);
+            [feature_vector_train, ~] = featureVector(features_train);
+            [feature_vector_test, ~] = featureVector(features_test);
+        elseif TrainTest == 1
+            test_part = subTestInd;
+            features_test = features(test_part);
+            features_train = features(~test_part);
+            [feature_vector_train, ~] = featureVector(features_train);
+            [feature_vector_test, ~] = featureVector(features_test);
+        end
+        
+        [predClass_train{i},classifScore] = models{i}.predict(feature_vector_train(:,maxIndex{i})); 
+        pred_train{i} = str2num(cell2mat(predClass_train{i}));
 
-        [predClass_val{i},classifScore] = models{i}.predict(feature_vector_val(:,maxIndex{i})); 
-        pred_val{i} = str2num(cell2mat(predClass_val{i}));
+        [predClass_test{i},classifScore] = models{i}.predict(feature_vector_test(:,maxIndex{i})); 
+        pred_test{i} = str2num(cell2mat(predClass_test{i}));
     end
     
-    pred = cell2mat(pred);
-    pred_val = cell2mat(pred_val);
+    pred_class_train = cell2mat(pred_train);
+    pred_class_test = cell2mat(pred_test);
     
     figure(3);clf;
-    plot_pred(pred, ratings);
+    plot_pred(pred_class_train, ratings_train);
 
     figure(4);clf;
-    plot_pred(pred_val, ratings_val);
+    plot_pred(pred_class_test, ratings_test);
     
     IndThresh = 1;
-    fprintf('Ensemble Metric Error: \n');
-    fprintf('Depth Perception: ');
-    check_err(pred(:,1), ratings(:,1), IndThresh);
-    fprintf('Bimanual Dexterity: ');
-    check_err(pred(:,2), ratings(:,2), IndThresh);
-    fprintf('Efficiency: ');
-    check_err(pred(:,3), ratings(:,3), IndThresh);
-    fprintf('Force Sensitivity: ');
-    check_err(pred(:,4), ratings(:,4), IndThresh);
-    fprintf('Robotic Control: ');
-    check_err(pred(:,5), ratings(:,5), IndThresh);
-
-    fprintf('Final Error: \n');
-    fprintf('Ensemble: ');
-    check_err(pred_val, ratings_val, IndThresh);
-    fprintf('Depth Perception: ');
-    check_err(pred_val(:,1), ratings_val(:,1), IndThresh);
-    fprintf('Bimanual Dexterity: ');
-    check_err(pred_val(:,2), ratings_val(:,2), IndThresh);
-    fprintf('Efficiency: ');
-    check_err(pred_val(:,3), ratings_val(:,3), IndThresh);
-    fprintf('Force Sensitivity: ');
-    check_err(pred_val(:,4), ratings_val(:,4), IndThresh);
-    fprintf('Robotic Control: ');
-    check_err(pred_val(:,5), ratings_val(:,5), IndThresh);
     
+    gears = {'Depth Perception','Bimanual Dexterity','Efficiency','Force Sensitivity','Robotic Control'};
+    fprintf('\nGEARS Domain \t& Regression Learner \t& Classification Learner\\\\ \\hline\n')
     for i = 1:5
-        near(2,i) = mean(abs(pred(:,i)-ratings(:,i)) <= 1);
-        exact(2,i) = mean(abs(pred(:,i)-ratings(:,i)) == 0); 
-        
-        near_val(2,i) = mean(abs(pred_val(:,i)-ratings_val(:,i)) <= 1);
-        exact_val(2,i) = mean(abs(pred_val(:,i)-ratings_val(:,i)) == 0); 
+        [~,~,~,exact_reg(i)] = check_err(pred_reg_test(:,i),ratings_test(:,i), IndThresh);
+        [~,~,~,exact_class(i)] = check_err(pred_class_test(:,i),ratings_test(:,i), IndThresh);
+        fprintf('%s \t& %d\\%% \t& %d\\%% \\\\ \\hline \n',gears{i},round(exact_reg(i)*100),round(exact_class(i)*100))
     end
     
-    figure(5)
-    subplot(221);bar(near')
-    subplot(223);bar(exact')
-    subplot(222);bar(near_val')
-    subplot(224);bar(exact_val')
+    fprintf('\nGEARS Domain \t& Regression Learner \t& Classification Learner\\\\ \\hline\n')
+    for i = 1:5
+        [~,~,near_reg(i),~] = check_err(pred_reg_test(:,i),ratings_test(:,i), IndThresh);
+        [~,~,near_class(i),~] = check_err(pred_class_test(:,i),ratings_test(:,i), IndThresh);
+        fprintf('%s \t& %d\\%% \t& %d\\%% \\\\ \\hline \n',gears{i},round(near_reg(i)*100),round(near_class(i)*100))
+    end
+    
+    h1=figure('Color',[1,1,1]);
+    fullscreen = get(0,'ScreenSize');
+    set(h1,'Position',[0 0 fullscreen(3) fullscreen(4)])
+    set(h1,'PaperOrientation','landscape');
+    set(h1,'PaperUnits','normalized');
+    set(h1,'PaperPosition', [0 0 1 1]);
+    
+    subfig = 5;
+    for i = 1:subfig
+        figaxes(i) = axes('Parent',h1,'YTick',1:5,'XTick',zeros(1,0),...
+            'XColor',[1 1 1],'OuterPosition',[0 (subfig-i)/subfig 1 1/subfig],'FontSize',20);
+            xlim(figaxes(i),[0.5 0.5+size(ratings_test,1)]); ylim(figaxes(i),[0.5 5.5]);
+            grid(figaxes(i),'on');
+            title(figaxes(i),gears{i});
+            hold(figaxes(i),'all');
+            
+            [rPlot, idx] = sort(ratings_test(:,i));
+            plot(rPlot,'Parent',figaxes(i),'Color','b','Marker','o','MarkerSize',10,'LineStyle','none')
+            plot(pred_reg_test(idx,i),'Parent',figaxes(i),'Color','r','Marker','x','MarkerSize',10,'LineStyle','none')
+            plot(pred_class_test(idx,i),'Parent',figaxes(i),'Color','g','Marker','+','MarkerSize',10,'LineStyle','none')
+    end
+    
+    figure1 = 'RawFigs/STBLearnerResults';
+    print(h1,'-depsc2',figure1); 
+    
+    
+    if icc
+    
+    %     load test_part
+        testData = subTest(:,1)+2;
+        data = STBData('SavedData', 'task', 1,'subject',testData);
+        data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
 
+        Jeremy = [];
+        David = [];
+        Kris = [];
+        for i = 1:length(data)
+            Jeremy = [Jeremy;data(i).score(1,:)];
+            if size(data(i).score,1)==3
+                fullIndex(i) = i;
+                Kris = [Kris;data(i).score(2,:)];
+                David = [David;data(i).score(3,:)];   
+            end
+        end
+
+        GearsRegAll = [];
+        GearsClassAll = [];
+        GearsJeremyAll = [];
+        for i = 1:5
+                GearsReg = [Kris(:,i),David(:,i),pred_reg_test(fullIndex~=0,i)];
+                GearsClass = [Kris(:,i),David(:,i),pred_class_test(fullIndex~=0,i)];
+                GearsJeremy = [Kris(:,i),David(:,i),Jeremy(fullIndex~=0,i)];
+                xlswrite(strcat('Stats/GearsReg',num2str(i)),GearsReg);
+                xlswrite(strcat('Stats/GearsClass',num2str(i)),GearsClass);
+                xlswrite(strcat('Stats/GearsJeremy',num2str(i)),GearsJeremy);
+                GearsRegAll = [GearsRegAll;GearsReg];
+                GearsClassAll = [GearsClassAll;GearsClass];
+                GearsJeremyAll = [GearsJeremyAll;GearsJeremy];
+        end
+        xlswrite('Stats/GearsRegAll',GearsRegAll);
+        xlswrite('Stats/GearsClassAll',GearsClassAll);
+        xlswrite('Stats/GearsJeremyAll',GearsJeremyAll);
+    end
 end
   
 

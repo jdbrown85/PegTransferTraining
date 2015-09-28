@@ -1,7 +1,7 @@
 clc; clear all;
 addpath SurveyResults
 
-for j = 6:6
+for j = 1:9
 [~, ~, raw] = xlsread(strcat('STB_GEARS_Rnd',num2str(j),'.xls'));
 ratedVideos = raw(3,strncmpi(raw(2,:), 'Video', 5));
 Score = cell2mat(raw(3:end, strncmpi(raw(1,:), 'Q', 1)))';
@@ -40,7 +40,7 @@ Gears3 = [];
 Gears4 = [];
 Gears5 = [];
 
-for i = 1:6
+for i = 1:9
     Gears1 = [Gears1;csvread(strcat('GEARS1_Rnd',num2str(i),'.csv'))];
     Gears2 = [Gears2;csvread(strcat('GEARS2_Rnd',num2str(i),'.csv'))];
     Gears3 = [Gears3;csvread(strcat('GEARS3_Rnd',num2str(i),'.csv'))];

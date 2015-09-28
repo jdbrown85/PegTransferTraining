@@ -1,5 +1,6 @@
 %% support vector regression test (from Sarah) converted for the STB data
 function [model,ErrTrain,Err_val,Pred,Pred_val,ratings,ratings_val] = randomForestSelectFeatures(rounding,FeatSel,nTrees)
+    tic
     clearvars -except rounding FeatSel nTrees;
 
     if ~exist('SelectFeatures.mat','file')
@@ -88,4 +89,5 @@ function [model,ErrTrain,Err_val,Pred,Pred_val,ratings,ratings_val] = randomFore
 %     save(strcat('resultsSQRTLogPCA',fileround,fileloocv,'Select.mat'), 'ratings', 'ratings_val', ...
 %         'pred_val', 'pred_val1', 'pred_val2', 'pred_val3', 'pred_val4',...
 %         'pred', 'pred1', 'pred2', 'pred3', 'pred4');
+toc
 end

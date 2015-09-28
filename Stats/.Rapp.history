@@ -850,16 +850,94 @@ lowerCI=c(0.617)#
 upperCI=c(13.87)#
 arrows(bar,lowerCI,bar, upperCI,angle=90,code=3,length=0.2)#
 abline(1,0)
+ls()
+ls()
 library(irr)#
-Gears <- read.table("GEARS_RndAll.csv", header=FALSE, sep=",")#
-Gears1 <- read.table("GEARS1_RndAll.csv", header=FALSE, sep=",")#
-Gears2 <- read.table("GEARS2_RndAll.csv", header=FALSE, sep=",")#
-Gears3 <- read.table("GEARS3_RndAll.csv", header=FALSE, sep=",")#
-Gears4 <- read.table("GEARS4_RndAll.csv", header=FALSE, sep=",")#
-Gears5 <- read.table("GEARS5_RndAll.csv", header=FALSE, sep=",")#
+Gears <- read.table("GEARSRegAll.csv", header=FALSE, sep=",")#
+Gears1 <- read.table("GEARSReg1.csv", header=FALSE, sep=",")#
+Gears2 <- read.table("GEARSReg2.csv", header=FALSE, sep=",")#
+Gears3 <- read.table("GEARSReg3.csv", header=FALSE, sep=",")#
+Gears4 <- read.table("GEARSReg4.csv", header=FALSE, sep=",")#
+Gears5 <- read.table("GEARSReg5.csv", header=FALSE, sep=",")#
+print(icc(Gears,model='twoway',type='agreement',unit='average'))#
+print(icc(Gears1,model='twoway',type='agreement',unit='average'))#
+print(icc(Gears2,model='twoway',type='agreement',unit='average'))#
+print(icc(Gears3,model='twoway',type='agreement',unit='average'))#
+print(icc(Gears4,model='twoway',type='agreement',unit='average'))#
+print(icc(Gears5,model='twoway',type='agreement',unit='average'))#
+#
+Gears <- read.table("GEARSClassAll.csv", header=FALSE, sep=",")#
+Gears1 <- read.table("GEARSClass1.csv", header=FALSE, sep=",")#
+Gears2 <- read.table("GEARSClass2.csv", header=FALSE, sep=",")#
+Gears3 <- read.table("GEARSClass3.csv", header=FALSE, sep=",")#
+Gears4 <- read.table("GEARSClass4.csv", header=FALSE, sep=",")#
+Gears5 <- read.table("GEARSClass5.csv", header=FALSE, sep=",")#
+print(icc(Gears,model='twoway',type='agreement',unit='average'))#
+print(icc(Gears1,model='twoway',type='agreement',unit='average'))#
+print(icc(Gears2,model='twoway',type='agreement',unit='average'))#
+print(icc(Gears3,model='twoway',type='agreement',unit='average'))#
+print(icc(Gears4,model='twoway',type='agreement',unit='average'))#
+print(icc(Gears5,model='twoway',type='agreement',unit='average'))#
+#
+Gears <- read.table("GEARSJeremyAll.csv", header=FALSE, sep=",")#
+Gears1 <- read.table("GEARSJeremy1.csv", header=FALSE, sep=",")#
+Gears2 <- read.table("GEARSJeremy2.csv", header=FALSE, sep=",")#
+Gears3 <- read.table("GEARSJeremy3.csv", header=FALSE, sep=",")#
+Gears4 <- read.table("GEARSJeremy4.csv", header=FALSE, sep=",")#
+Gears5 <- read.table("GEARSJeremy5.csv", header=FALSE, sep=",")#
 print(icc(Gears,model='twoway',type='agreement',unit='average'))#
 print(icc(Gears1,model='twoway',type='agreement',unit='average'))#
 print(icc(Gears2,model='twoway',type='agreement',unit='average'))#
 print(icc(Gears3,model='twoway',type='agreement',unit='average'))#
 print(icc(Gears4,model='twoway',type='agreement',unit='average'))#
 print(icc(Gears5,model='twoway',type='agreement',unit='average'))
+icc(Gears,model='twoway',type='agreement',unit='average')
+help(icc)
+vale
+value
+$value
+icclist
+icc.type
+library(irr)#
+Gears <- read.table("GEARSRegAll.csv", header=FALSE, sep=",")#
+Gears1 <- read.table("GEARSReg1.csv", header=FALSE, sep=",")#
+Gears2 <- read.table("GEARSReg2.csv", header=FALSE, sep=",")#
+Gears3 <- read.table("GEARSReg3.csv", header=FALSE, sep=",")#
+Gears4 <- read.table("GEARSReg4.csv", header=FALSE, sep=",")#
+Gears5 <- read.table("GEARSReg5.csv", header=FALSE, sep=",")#
+print(icc(Gears,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears1,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears2,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears3,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears4,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears5,model='twoway',type='agreement',unit='single'))#
+#
+Gears <- read.table("GEARSClassAll.csv", header=FALSE, sep=",")#
+Gears1 <- read.table("GEARSClass1.csv", header=FALSE, sep=",")#
+Gears2 <- read.table("GEARSClass2.csv", header=FALSE, sep=",")#
+Gears3 <- read.table("GEARSClass3.csv", header=FALSE, sep=",")#
+Gears4 <- read.table("GEARSClass4.csv", header=FALSE, sep=",")#
+Gears5 <- read.table("GEARSClass5.csv", header=FALSE, sep=",")#
+print(icc(Gears,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears1,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears2,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears3,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears4,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears5,model='twoway',type='agreement',unit='single'))#
+#
+Gears <- read.table("GEARSJeremyAll.csv", header=FALSE, sep=",")#
+Gears1 <- read.table("GEARSJeremy1.csv", header=FALSE, sep=",")#
+Gears2 <- read.table("GEARSJeremy2.csv", header=FALSE, sep=",")#
+Gears3 <- read.table("GEARSJeremy3.csv", header=FALSE, sep=",")#
+Gears4 <- read.table("GEARSJeremy4.csv", header=FALSE, sep=",")#
+Gears5 <- read.table("GEARSJeremy5.csv", header=FALSE, sep=",")#
+print(icc(Gears,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears1,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears2,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears3,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears4,model='twoway',type='agreement',unit='single'))#
+print(icc(Gears5,model='twoway',type='agreement',unit='single'))
+stored_vector <- icc(Gears5,model='twoway',type='agreement',unit='single')
+ls()
+stored_vector
+write.csv(stored_vector, file="MyData.csv")

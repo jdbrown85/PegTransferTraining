@@ -1,8 +1,8 @@
-function feat = staticFeatures(data)
+function feat = staticFeatures(data,rounding)
 
 
     %% Design FIR bandpass filter
-	F1 = 150;
+	F1 = 100;
 	F2 = 750;
 	Fs = 3e3;
 % 	fHP = designfilt('bandpassiir','StopbandFrequency',FstopHP ,...
@@ -38,22 +38,40 @@ function feat = staticFeatures(data)
 	for t = 1:length(data)
 
 		fMag = sqrt(sum(data(t).forces.^2,2)); %force magnitude
+        
+        Acc(:,:,1)  = double(data(t).acc1);
+        Acc(:,:,2)  = double(data(t).acc2);
+        Acc(:,:,3)  = double(data(t).acc3);
+
+        AccX = [Acc(:,1,1),Acc(:,1,2),Acc(:,1,3)];
+        AccY = [Acc(:,2,1),Acc(:,2,2),Acc(:,2,3)];
+        AccZ = [Acc(:,3,1),Acc(:,3,2),Acc(:,3,3)];
+
+        AccXzero = bsxfun(@minus, AccX, mean(AccX));
+        AccYzero = bsxfun(@minus, AccY, mean(AccY));
+        AccZzero = bsxfun(@minus, AccZ, mean(AccZ));
+
+        [Acc1Tot,trunc] = proj321_OA(AccXzero(:,1),AccYzero(:,1),AccZzero(:,1));
+        [Acc2Tot,trunc] = proj321_OA(AccXzero(:,2),AccYzero(:,2),AccZzero(:,2));
+        [Acc3Tot,trunc] = proj321_OA(AccXzero(:,3),AccYzero(:,3),AccZzero(:,3));
+        
+        clear Acc
 		
 		% seperate accelerometer signals into low and high frequency components
-		acc1 = filtfilt(fHP,double(sum(data(t).acc1,2)));
-		acc1H = filtfilt(fHHP,double(sum(data(t).acc1,2)));
-		acc1L = filtfilt(fLP,double(sum(data(t).acc1,2)));
-		acc2 = filtfilt(fHP,double(sum(data(t).acc2,2)));
-		acc2H = filtfilt(fHHP,double(sum(data(t).acc2,2)));
-		acc2L = filtfilt(fLP,double(sum(data(t).acc2,2)));
-        acc3 = filtfilt(fHP,double(sum(data(t).acc3,2)));
-        acc3H = filtfilt(fHHP,double(sum(data(t).acc3,2)));
-		acc3L = filtfilt(fLP,double(sum(data(t).acc3,2)));
+		acc1 = filtfilt(fHP,Acc1Tot);
+		acc1H = filtfilt(fHHP,Acc1Tot);
+		acc1L = filtfilt(fLP,Acc1Tot);
+		acc2 = filtfilt(fHP,Acc2Tot);
+		acc2H = filtfilt(fHHP,Acc2Tot);
+		acc2L = filtfilt(fLP,Acc2Tot);
+        acc3 = filtfilt(fHP,Acc3Tot);
+        acc3H = filtfilt(fHHP,Acc3Tot);
+		acc3L = filtfilt(fLP,Acc3Tot);
        
 		%signal product features
 		accProd = acc1.*acc3;
-		fAcc1Prod = acc1.*fMag;
-		fAcc2Prod = acc3.*fMag;
+		fAcc1Prod = acc1.*fMag(1:trunc);
+		fAcc2Prod = acc3.*fMag(1:trunc);
 		
 		% orientation features
 
@@ -141,7 +159,11 @@ function feat = staticFeatures(data)
             feat(k).gears = data(t).score';
         else
             for i = 1:size(data(t).score,1)
-                feat(k).gears = mean(data(t).score',2); % if rated by more than 1 rater, treat as individual observation
+                if rounding == 0
+                    feat(k).gears = median(data(t).score',2); % if rated by more than 1 rater, treat as individual observation
+                elseif rounding == 1
+                    feat(k).gears = mean(data(t).score',2);
+                end               
 %                 k = k+1;
 %                 feat(k) = feat(k-1); % copies previous features over
             end
