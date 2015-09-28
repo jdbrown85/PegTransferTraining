@@ -18,7 +18,7 @@ save(strcat('ModelRunsCompare',num2str(datestr(now, 'ddmmyyHHMM')),'.mat'),...
 %%
 
 exact_reg = exact_reg*100;
-exact_clas = exact_class*100;
+exact_class = exact_class*100;
 near_reg = near_reg*100;
 near_class = near_class*100;
 
