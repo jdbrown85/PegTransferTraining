@@ -2,7 +2,7 @@ clear all; close all; clc;
 
 data = STBData('SavedData', 'task', 1, 'subject', 34);
 
-file = data(2);
+file = data(1);
 
 Acc(:,:,1)  = double(file.acc1);
 Acc(:,:,2)  = double(file.acc2);
@@ -18,13 +18,13 @@ FrcX = Frc(:,1);
 FrcY = Frc(:,2);
 FrcZ = Frc(:,3);
 
-n = 4;
-Ts = 1/3000;
-Wn = 80*Ts/2;
-[b,a] = butter(n,Wn,'low');
-FrcX = filtfilt(b,a,double(FrcX));
-FrcY = filtfilt(b,a,double(FrcY));
-FrcZ = filtfilt(b,a,double(FrcZ));
+% n = 4;
+% Ts = 1/3000;
+% Wn = 80*Ts/2;
+% [b,a] = butter(n,Wn,'low');
+% FrcX = filtfilt(b,a,double(FrcX));
+% FrcY = filtfilt(b,a,double(FrcY));
+% FrcZ = filtfilt(b,a,double(FrcZ));
 
 % FrcY = sqrt(FrcXfilt.^2+FrcYfilt.^2);
 % FrcX = FrcZfilt;
@@ -44,9 +44,17 @@ fHP = designfilt('bandpassfir','FilterOrder',20, ...
      'CutoffFrequency1',F1,'CutoffFrequency2',F2, ...
      'SampleRate',Fs);
 
-acc1 = filtfilt(fHP,Acc1Tot)*9.81;
-acc2 = filtfilt(fHP,Acc2Tot)*9.81;
-acc3 = filtfilt(fHP,Acc3Tot)*9.81;
+acc1 = AccX(:,1)*9.81;
+acc2 = AccY(:,1)*9.81;
+acc3 = AccZ(:,1)*9.81;
+ 
+%  acc1 = Acc1Tot*9.81;
+%  acc2 = Acc2Tot*9.81;
+%  acc3 = Acc3Tot*9.81;
+ 
+% acc1 = filtfilt(fHP,Acc1Tot)*9.81;
+% acc2 = filtfilt(fHP,Acc2Tot)*9.81;
+% acc3 = filtfilt(fHP,Acc3Tot)*9.81;
 
 %%
 width = 1;
@@ -111,9 +119,13 @@ plot(Plot_time,FrcX,'Parent',axes1,'Color','b','LineStyle','-','Marker','none','
 plot(Plot_time,FrcY,'Parent',axes2,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
 plot(Plot_time,FrcZ,'Parent',axes3,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
 
-plot(Plot_time(1:trunc),acc1,'Parent',axes4,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
-plot(Plot_time(1:trunc),acc2,'Parent',axes5,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
-plot(Plot_time(1:trunc),acc3,'Parent',axes6,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
+plot(Plot_time,acc1,'Parent',axes4,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
+plot(Plot_time,acc2,'Parent',axes5,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
+plot(Plot_time,acc3,'Parent',axes6,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
+
+% plot(Plot_time(1:trunc),acc1,'Parent',axes4,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
+% plot(Plot_time(1:trunc),acc2,'Parent',axes5,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
+% plot(Plot_time(1:trunc),acc3,'Parent',axes6,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
 
 figure1 = 'RawFigs/STBSampDataPeg';
 print(h1,'-depsc2',figure1); 

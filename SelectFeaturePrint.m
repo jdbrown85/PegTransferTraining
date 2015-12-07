@@ -1,7 +1,10 @@
 clear all; close all; clc;
 
-load Features
-load SelectFeatures
+run = '3010151927';
+
+load(strcat('featuresMean',run,'.mat'))
+load(strcat('SelectFeaturesMean',run,'.mat'));
+
 [feature_vector, ratings, index] = featureVector(features);
 
 gears = {'Depth Perception','Bimanual Dexterity','Efficiency','Force Sensitivity','Robotic Control'};
@@ -22,7 +25,7 @@ for i=1:5
 end
 fprintf('\n')
 %%
-load randForestLearner500Trees
+load(strcat('randForest500TreesRoundSubPart',run,'r1.mat'))
 
 fprintf('Classification Learner\n')
 for i=1:5

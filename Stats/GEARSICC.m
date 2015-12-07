@@ -1,7 +1,7 @@
-clc; clear all;
+clc; clear all; close all;
 addpath SurveyResults
 
-for j = 1:9
+for j = 1:12
 [~, ~, raw] = xlsread(strcat('STB_GEARS_Rnd',num2str(j),'.xls'));
 ratedVideos = raw(3,strncmpi(raw(2,:), 'Video', 5));
 Score = cell2mat(raw(3:end, strncmpi(raw(1,:), 'Q', 1)))';
@@ -40,13 +40,31 @@ Gears3 = [];
 Gears4 = [];
 Gears5 = [];
 
-for i = 1:9
+for i = 1:12
     Gears1 = [Gears1;csvread(strcat('GEARS1_Rnd',num2str(i),'.csv'))];
     Gears2 = [Gears2;csvread(strcat('GEARS2_Rnd',num2str(i),'.csv'))];
     Gears3 = [Gears3;csvread(strcat('GEARS3_Rnd',num2str(i),'.csv'))];
     Gears4 = [Gears4;csvread(strcat('GEARS4_Rnd',num2str(i),'.csv'))];
     Gears5 = [Gears5;csvread(strcat('GEARS5_Rnd',num2str(i),'.csv'))];
 end
+
+% GEARS = [Gears1;Gears2;Gears3;Gears4;Gears5];
+GEARS = Gears1+Gears2+Gears3+Gears4+Gears5;
+
+[Gears1ICC, ~, ~, ~, ~, ~, ~] = ICC(Gears1(~any(isnan(Gears1),2),:), 'A-k', .05, 0)
+[Gears2ICC, ~, ~, ~, ~, ~, ~] = ICC(Gears2(~any(isnan(Gears2),2),:), 'A-k', .05, 0)
+[Gears3ICC, ~, ~, ~, ~, ~, ~] = ICC(Gears3(~any(isnan(Gears3),2),:), 'A-k', .05, 0)
+[Gears4ICC, ~, ~, ~, ~, ~, ~] = ICC(Gears4(~any(isnan(Gears4),2),:), 'A-k', .05, 0)
+[Gears5ICC, ~, ~, ~, ~, ~, ~] = ICC(Gears5(~any(isnan(Gears5),2),:), 'A-k', .05, 0)
+[GearsICC, ~, ~, ~, ~, ~, ~] = ICC(GEARS(~any(isnan(GEARS),2),:), 'A-k', .05, 0)
+
+fprintf('\n\\TextWrapCent{GEARS}{Domain} \\\\ \\hline\n')
+fprintf('%s \t& %1.2f \\\\ \n','Depth Perception',Gears1ICC)
+fprintf('%s \t& %1.2f \\\\ \n','Bimanual Dexterity',Gears2ICC)
+fprintf('%s \t& %1.2f \\\\ \n','Efficiency',Gears3ICC)
+fprintf('%s \t& %1.2f \\\\ \n','Force Sensitivity',Gears4ICC)
+fprintf('%s \t& %1.2f \\\\ \n','Robotic Control',Gears5ICC)
+fprintf('%s \t& %1.2f \\\\ \n','Overall',GearsICC)
 
 xlswrite('Stats/GEARS1_RndAll',Gears1);
 xlswrite('Stats/GEARS2_RndAll',Gears2);

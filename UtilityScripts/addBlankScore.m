@@ -1,7 +1,7 @@
 clearvars;
-disp('THIS SCRIPT DELETES EVERY SCORE CURRENTLY RECORDED')
-disp('ARE YOU SURE?')
-pause;
+% disp('THIS SCRIPT DELETES EVERY SCORE CURRENTLY RECORDED')
+% disp('ARE YOU SURE?')
+% pause;
 
 dataDir = 'SavedData';
 subjectDirs = dir([dataDir '/Subject*']);

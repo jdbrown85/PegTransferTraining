@@ -34,7 +34,7 @@ function parseRatings(ratingFile, dataDir)
             
             save(lookup(ratedVideos{i}), 'score', 'rater', '-append');
         catch ME
-            disp(['Trouble with Video' num2str(i)]);
+            disp(['Trouble with Video' num2str(i) ratingFile]);
             disp(ME.message)
         end
     end

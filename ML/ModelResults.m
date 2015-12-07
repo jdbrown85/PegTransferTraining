@@ -1,4 +1,5 @@
 function [exact_reg,exact_class,near_reg,near_class] = ModelResults(rounding,TrainTest,nTrees,time,icc)
+%     rounding = 1; TrainTest = 1; nTrees = 500; time = '0610152241'; icc = 1;
     close all;
     clearvars -except rounding TrainTest nTrees time icc
     
@@ -101,14 +102,14 @@ function [exact_reg,exact_class,near_reg,near_class] = ModelResults(rounding,Tra
     for i = 1:5
         [~,~,~,exact_reg(i)] = check_err(pred_reg_test(:,i),ratings_test(:,i), IndThresh);
         [~,~,~,exact_class(i)] = check_err(pred_class_test(:,i),ratings_test(:,i), IndThresh);
-        fprintf('%s \t& %d\\%% \t& %d\\%% \\\\ \\hline \n',gears{i},round(exact_reg(i)*100),round(exact_class(i)*100))
+        fprintf('%s \t& %d\\%% \t& %d\\%% \\\\ \n',gears{i},round(exact_reg(i)*100),round(exact_class(i)*100))
     end
     
     fprintf('\nGEARS Domain \t& Regression Learner \t& Classification Learner\\\\ \\hline\n')
     for i = 1:5
         [~,~,near_reg(i),~] = check_err(pred_reg_test(:,i),ratings_test(:,i), IndThresh);
         [~,~,near_class(i),~] = check_err(pred_class_test(:,i),ratings_test(:,i), IndThresh);
-        fprintf('%s \t& %d\\%% \t& %d\\%% \\\\ \\hline \n',gears{i},round(near_reg(i)*100),round(near_class(i)*100))
+        fprintf('%s \t& %d\\%% \t& %d\\%% \\\\ \n',gears{i},round(near_reg(i)*100),round(near_class(i)*100))
     end
     
     h1=figure('Color',[1,1,1]);
@@ -138,43 +139,55 @@ function [exact_reg,exact_class,near_reg,near_class] = ModelResults(rounding,Tra
     
     
     if icc
-    
-    %     load test_part
-        testData = subTest(:,1)+2;
-        data = STBData('SavedData', 'task', 1,'subject',testData);
-        data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
+        IccType = {'A-k','A-1'};
+        for k = 1:2
+            testData = subTest(:,1)+2;
+            data = STBData('SavedData', 'task', 1,'subject',testData);
+            data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
 
-        Jeremy = [];
-        David = [];
-        Kris = [];
-        for i = 1:length(data)
-            Jeremy = [Jeremy;data(i).score(1,:)];
-            if size(data(i).score,1)==3
-                fullIndex(i) = i;
-                Kris = [Kris;data(i).score(2,:)];
-                David = [David;data(i).score(3,:)];   
+            Jeremy = [];
+            David = [];
+            Kris = [];
+            for i = 1:length(data)
+                Jeremy = [Jeremy;data(i).score(1,:)];
+                if size(data(i).score,1)==3
+                    fullIndex(i) = i;
+                    Kris = [Kris;data(i).score(2,:)];
+                    David = [David;data(i).score(3,:)];   
+                end
             end
-        end
 
-        GearsRegAll = [];
-        GearsClassAll = [];
-        GearsJeremyAll = [];
-        for i = 1:5
-                GearsReg = [Kris(:,i),David(:,i),pred_reg_test(fullIndex~=0,i)];
-                GearsClass = [Kris(:,i),David(:,i),pred_class_test(fullIndex~=0,i)];
-                GearsJeremy = [Kris(:,i),David(:,i),Jeremy(fullIndex~=0,i)];
-                xlswrite(strcat('Stats/GearsReg',num2str(i)),GearsReg);
-                xlswrite(strcat('Stats/GearsClass',num2str(i)),GearsClass);
-                xlswrite(strcat('Stats/GearsJeremy',num2str(i)),GearsJeremy);
-                GearsRegAll = [GearsRegAll;GearsReg];
-                GearsClassAll = [GearsClassAll;GearsClass];
-                GearsJeremyAll = [GearsJeremyAll;GearsJeremy];
+            GearsRegAll = [];
+            GearsClassAll = [];
+            GearsJeremyAll = [];
+            fprintf('\n\\TextWrapCent{GEARS}{Domain} \t& \\TextWrapCent{Regression}{Learner} \t& \\TextWrapCent{Classification}{Learner} \t& \\TextWrapCent{Non-Expert}{Rater}\\\\ \\hline\n')
+            for i = 1:5
+                    GearsReg = [Kris(:,i),David(:,i),pred_reg_test(fullIndex~=0,i)];
+                    GearsClass = [Kris(:,i),David(:,i),pred_class_test(fullIndex~=0,i)];
+                    GearsJeremy = [Kris(:,i),David(:,i),Jeremy(fullIndex~=0,i)];
+                    [rGearsReg, ~, ~, ~, ~, ~, ~] = ICC(GearsReg, IccType{k}, .05, 0);
+                    [rGearsClass, ~, ~, ~, ~, ~, ~] = ICC(GearsClass, IccType{k}, .05, 0);
+                    [rGearsJeremy, ~, ~, ~, ~, ~, ~] = ICC(GearsJeremy, IccType{k}, .05, 0);
+                    fprintf('%s \t& %1.2f \t& %1.2f \t& %1.2f \\\\ \n',gears{i},rGearsReg,rGearsClass,rGearsJeremy)
+                    csvwrite(strcat('Stats/GearsReg',num2str(i),time,'.csv'),GearsReg);
+                    csvwrite(strcat('Stats/GearsClass',num2str(i),time,'.csv'),GearsClass);
+                    csvwrite(strcat('Stats/GearsJeremy',num2str(i),time,'.csv'),GearsJeremy);
+                    GearsRegAll = [GearsRegAll;GearsReg];
+                    GearsClassAll = [GearsClassAll;GearsClass];
+                    GearsJeremyAll = [GearsJeremyAll;GearsJeremy];
+            end
+            [rGearsRegAll, ~, ~, ~, ~, ~, ~] = ICC(GearsRegAll, IccType{k}, .05, 0);
+            [rGearsClassAll, ~, ~, ~, ~, ~, ~] = ICC(GearsClassAll, IccType{k}, .05, 0);
+            [rGearsJeremyAll, ~, ~, ~, ~, ~, ~] = ICC(GearsJeremyAll, IccType{k}, .05, 0);
+            fprintf('%s \t& %1.2f \t& %1.2f \t& %1.2f \\\\ \n','Overall',rGearsRegAll,rGearsClassAll,rGearsJeremyAll)
+            csvwrite(strcat('Stats/GearsRegAll',time,'.csv'),GearsRegAll);
+            csvwrite(strcat('Stats/GearsClassAll',time,'.csv'),GearsClassAll);
+            csvwrite(strcat('Stats/GearsJeremyAll',time,'.csv'),GearsJeremyAll);
         end
-        xlswrite('Stats/GearsRegAll',GearsRegAll);
-        xlswrite('Stats/GearsClassAll',GearsClassAll);
-        xlswrite('Stats/GearsJeremyAll',GearsJeremyAll);
     end
 end
+
+
   
 
 %     for i = 1:5

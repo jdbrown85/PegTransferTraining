@@ -1,10 +1,13 @@
-function ForwardSelection(rounding)
-clearvars -except rounding
+function ForwardSelection(rounding,time)
+clearvars -except rounding time
 addpath('LIBSVM');
 addpath('glmnet_matlab');
 
+filename1 = strcat('MLRunfeaturesMed',num2str(time),'.mat');
+filename2 = strcat('featuresMean',num2str(time),'.mat');
+
 if rounding == 0 
-    if ~exist('featuresMed.mat','file')
+    if ~exist(filename1,'file')
         if ~exist('data')
             data = STBData('SavedData', 'task', 1);
             data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
@@ -23,14 +26,14 @@ if rounding == 0
         disp('Extracting Features...')
         features = staticFeatures(data,rounding);
         features = featurePCA(features);
-        save('featuresMed.mat', 'features');
+        save(filename1, 'features');
     else
         disp('Loading Features...')
-        load featuresMed.mat;
+        load(filename1);
         features = features(~cellfun(@isempty,{features.gears}));
     end
 elseif rounding == 1
-    if ~exist('featuresMean.mat','file')
+    if ~exist(filename2,'file')
         if ~exist('data')
             data = STBData('SavedData', 'task', 1);
             data = data(~cellfun(@(x)any(isnan(x(:))), {data.score}));
@@ -49,10 +52,10 @@ elseif rounding == 1
         disp('Extracting Features...')
         features = staticFeatures(data,rounding);
         features = featurePCA(features);
-        save('featuresMean.mat', 'features');
+        save(filename2, 'features');
     else
         disp('Loading Features...')
-        load featuresMean.mat;
+        load(filename2);
         features = features(~cellfun(@isempty,{features.gears}));
     end
 end
@@ -112,8 +115,8 @@ end
 selectFeatures = total_index;
 
 if rounding == 0
-    save('SelectFeaturesMed.mat','selectFeatures')
+    save(strcat('SelectFeaturesMed',num2str(time),'.mat'),'selectFeatures')
 elseif rounding == 1
-    save('SelectFeaturesMean.mat','selectFeatures')
+    save(strcat('SelectFeaturesMean',num2str(time),'.mat'),'selectFeatures')
 end
 

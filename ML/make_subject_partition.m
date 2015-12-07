@@ -21,7 +21,7 @@ for i = 1:n
     samp = subjectFam(subjectFam(:,2)==i,:);
     subExcl(i) = samp(randperm(length(samp),1),1);
 end
-while size(subExcl,2)<n || any(ismember(subExcl,18))
+while size(subExcl,2)<n || any(ismember(subExcl,18)) || any(ismember(subExcl,24))
     for i = 1:n
         samp = subjectFam(subjectFam(:,2)==i,:);
         subExcl(i) = samp(randperm(length(samp),1),1);
