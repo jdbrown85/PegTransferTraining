@@ -53,25 +53,25 @@ end
 
 
 
-% h1=figure('Color',[1,1,1]);
-% fullscreen = get(0,'ScreenSize');
-% set(h1,'Position',[0 0 fullscreen(3) fullscreen(4)])
-% set(h1,'PaperOrientation','landscape');
-% set(h1,'PaperUnits','normalized');
-% set(h1,'PaperPosition', [0 0 1 1]);
-% barweb([exact_reg_avg;exact_class_avg]',[exact_reg_std;exact_class_std]')
-% figure1 = 'RawFigs/ExactAccuracy';
-% print(h1,'-depsc',figure1)
-% 
-% h2=figure('Color',[1,1,1]);
-% fullscreen = get(0,'ScreenSize');
-% set(h2,'Position',[0 0 fullscreen(3) fullscreen(4)])
-% set(h2,'PaperOrientation','landscape');
-% set(h2,'PaperUnits','normalized');
-% set(h2,'PaperPosition', [0 0 1 1]);
-% barweb([near_reg_avg;near_class_avg]',[near_reg_std;near_class_std]')
-% figure2 = 'RawFigs/NearAccuracy';
-% print(h2,'-depsc',figure2)
+h1=figure('Color',[1,1,1]);
+fullscreen = get(0,'ScreenSize');
+set(h1,'Position',[0 0 fullscreen(3) fullscreen(4)])
+set(h1,'PaperOrientation','landscape');
+set(h1,'PaperUnits','normalized');
+set(h1,'PaperPosition', [0 0 1 1]);
+barweb([exact_reg_avg;exact_class_avg]',[exact_reg_std;exact_class_std]')
+figure1 = 'RawFigs/ExactAccuracy';
+print(h1,'-depsc',figure1)
+
+h2=figure('Color',[1,1,1]);
+fullscreen = get(0,'ScreenSize');
+set(h2,'Position',[0 0 fullscreen(3) fullscreen(4)])
+set(h2,'PaperOrientation','landscape');
+set(h2,'PaperUnits','normalized');
+set(h2,'PaperPosition', [0 0 1 1]);
+barweb([near_reg_avg;near_class_avg]',[near_reg_std;near_class_std]')
+figure2 = 'RawFigs/NearAccuracy';
+print(h2,'-depsc',figure2)
 
 %%
 IccType = {'A-k','A-1'};
