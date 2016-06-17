@@ -55,15 +55,31 @@ data(1).plotAcc(1)
 
 %% Generating Surveys
 clearvars;
-% Load task #1 data
-data = STBData('SavedData', 'task', 1);
+% Load task data
+
+% task = 1;
+task = 2;
+% task = 3;
+data = STBData('SavedData', 'task', task);
+
+% Remove trials that will be used for calibration survey
+[Index,Subject] = RemoveSubTrialsCal(data,task,2);
+
+% Generate calibration survery 
+Caldata = data(Index{1});
+genSurvey(Caldata,sprintf('SurveyT%d_Cal1.txt',task));
+
+Caldata = data(Index{2});
+genSurvey(Caldata,sprintf('SurveyT%d_Cal2.txt',task));
 
 % Generate 10-trial partitions for survey
+ind = Index{1}|Index{2};
+data(ind) = [];
 part = make_xval_partition(numel(data), ceil(numel(data)/10));
 
 % Generate surveys
 for survey = unique(part)
-    genSurvey(data(part == survey), sprintf('Survey%02d.txt', survey));
+    genSurvey(data(part == survey), sprintf('SurveyT%d_%02d.txt',task, survey));
 end
 
 %% Generate Survey without Trials that Have already been scored

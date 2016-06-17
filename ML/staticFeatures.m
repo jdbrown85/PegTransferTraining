@@ -1,3 +1,5 @@
+%%%%% Calculates the set of features.
+
 function feat = staticFeatures(data,rounding)
 % data = STBData('SavedData', 'task', 1,'subject',3);
 % data = data(1);

@@ -73,8 +73,8 @@ classdef STBData < handle
                             obj(k).rater = rater;
                             
 	                        obj(k).index = k;
-	                        
-		                    k = k +1;
+                                                   
+	                       	k = k +1;
                             
                             clear rawData youtube youtube_short score rater
 						end

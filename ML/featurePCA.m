@@ -1,3 +1,6 @@
+%%%%% Computes the PCA of the feature set then addes the first three
+%%%%% features to the set
+
 function feat = featurePCA(features)
 
     [feature_vector, ratings, index] = featureVector(features);

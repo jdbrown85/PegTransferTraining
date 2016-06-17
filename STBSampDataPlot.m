@@ -43,6 +43,11 @@ Fs = 3e3;
 fHP = designfilt('bandpassfir','FilterOrder',20, ...
      'CutoffFrequency1',F1,'CutoffFrequency2',F2, ...
      'SampleRate',Fs);
+ 
+[r1, p1] = acc_orientation(file.acc1); 
+r1 = r1*180/pi;
+p1 = p1*180/pi;
+Plot_timeTilt = decimate(decimate(Plot_time,10),3)';
 
 acc1 = AccX(:,1)*9.81;
 acc2 = AccY(:,1)*9.81;
@@ -59,12 +64,7 @@ acc3 = AccZ(:,1)*9.81;
 %%
 width = 1;
 
-h1=figure('Color',[1,1,1]);
-fullscreen = get(0,'ScreenSize');
-set(h1,'Position',[0 0 fullscreen(3) fullscreen(4)])
-set(h1,'PaperOrientation','landscape');
-set(h1,'PaperUnits','normalized');
-set(h1,'PaperPosition', [0 0 1 1]);
+h1 = CreateFig;
 
 axes1 = axes('Parent',h1,'YTick',[floor(min(FrcX)) 0 ceil(max(FrcX))],...
     'XTick',zeros(1,0),...
@@ -115,6 +115,27 @@ xlim(axes6,[0 Plot_time(end)]); ylim(axes6,[floor(min(acc3)) ceil(max(acc3))])
 % xlabel(axes4,'Time (s)')
 hold(axes6,'all');
 
+h2 = CreateFig;
+
+axes7 = axes('Parent',h2,'YTick',[-55 -50 -45 -40],...
+    'XTick',zeros(1,0),...
+    'XColor',[1 1 1],...
+    'OuterPosition',[0 1/2 1 1/2],...
+    'FontSize',20);
+xlim(axes7,[0 Plot_time(end)]); ylim(axes7,[-60,-35])
+% xlabel(axes4,'Time (s)')
+hold(axes7,'all');
+
+axes8 = axes('Parent',h2,'YTick',[-140 -120 -100 -80 -60],...
+    'XTickLabel',{'0','','30','','60','','90','','120'},...
+    'XTick',[0 15 30 45 60 75 90 105 120],...
+    'OuterPosition',[0 0 1 1/2],...
+    'FontSize',20);
+xlim(axes8,[0 Plot_time(end)]); ylim(axes8,[-140,-50])
+% xlabel(axes4,'Time (s)')
+hold(axes8,'all');
+    
+
 plot(Plot_time,FrcX,'Parent',axes1,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
 plot(Plot_time,FrcY,'Parent',axes2,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
 plot(Plot_time,FrcZ,'Parent',axes3,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
@@ -123,11 +144,17 @@ plot(Plot_time,acc1,'Parent',axes4,'Color','b','LineStyle','-','Marker','none','
 plot(Plot_time,acc2,'Parent',axes5,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
 plot(Plot_time,acc3,'Parent',axes6,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
 
+plot(Plot_timeTilt,r1,'Parent',axes7,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
+plot(Plot_timeTilt,p1,'Parent',axes8,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
+
 % plot(Plot_time(1:trunc),acc1,'Parent',axes4,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
 % plot(Plot_time(1:trunc),acc2,'Parent',axes5,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
 % plot(Plot_time(1:trunc),acc3,'Parent',axes6,'Color','b','LineStyle','-','Marker','none','LineWidth',width)
 
 figure1 = 'RawFigs/STBSampDataPeg';
-print(h1,'-depsc2',figure1); 
+PrintFig(h1,figure1,'eps')
+
+figure2 = 'RawFigs/STBTiltDataPeg';
+PrintFig(h2,figure2,'eps')
 
 

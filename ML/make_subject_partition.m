@@ -1,3 +1,8 @@
+%%%%% this function select n subjects to reserve for the testing set.
+%%%%% Subjects are randomly selected from each familiarity rating (1-4). If
+%%%%% n is greater than 4, ...
+
+
 function [subTest,subTestInd,subTrain,subTrainInd] =  make_subject_partition(n)
 
 if ~exist('subjectFam.mat','file')
