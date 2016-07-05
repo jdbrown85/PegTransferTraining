@@ -1,7 +1,7 @@
 function plotMom(obj, range)
     for i = 1:length(obj)
-        figure;
-        clf;
+%         figure;
+%         clf;
         if nargin == 1
         	plot(obj.plot_time,obj.moments);
         else

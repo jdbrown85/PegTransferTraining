@@ -153,7 +153,12 @@ function feat = staticFeatures(data,rounding)
         %feat(k).tss = extract_feature(@(x) sum(x.^2), raw_features{:}); %compute sum of squares of all features
         feat(k).tss = extract_feature(@(x) sum(bsxfun(@minus,x,mean(x)).^2), raw_features{:}); %compute sum of squares of all features
 
-
+        %force integral
+%         timeVec = 0:1/3000:data(1).duration;        
+        feat(k).int = [extract_feature(@(x) trapz(0:1/3000:(length(x)-1)/3000,x), raw_featuresABS{1:22});... 
+                       extract_feature(@(x) trapz(0:1/100:(length(x)-1)/100,x), raw_featuresABS{23:34})];
+        
+        
 		%range
 		feat(k).range = feat(k).max - feat(k).min; %compute range of all features
 

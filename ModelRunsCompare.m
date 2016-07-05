@@ -99,19 +99,19 @@ f1_class_std = nanstd(f1_class,0,3);
 pe_reg_std = nanstd(pe_reg,0,3);
 pe_class_std = nanstd(pe_class,0,3);
 
-prec_reg_avgavg = nanmean(prec_reg_avg,1);
-prec_class_avgavg = nanmean(prec_class_avg,1);
-rec_reg_avgavg = nanmean(rec_reg_avg,1);
-rec_class_avgavg = nanmean(rec_class_avg,1);
-f1_reg_avgavg = nanmean(f1_reg_avg,1);
-f1_class_avgavg = nanmean(f1_class_avg,1);
+prec_reg_avgavg = nanmean(reshape(permute(prec_reg,[1 3 2]),[],5),1);
+prec_class_avgavg = nanmean(reshape(permute(prec_class,[1 3 2]),[],5),1);
+rec_reg_avgavg = nanmean(reshape(permute(rec_reg,[1 3 2]),[],5),1);
+rec_class_avgavg = nanmean(reshape(permute(rec_class,[1 3 2]),[],5),1);
+f1_reg_avgavg = nanmean(reshape(permute(f1_reg,[1 3 2]),[],5),1);
+f1_class_avgavg = nanmean(reshape(permute(f1_class,[1 3 2]),[],5),1);
 
-prec_reg_stdstd = nanstd(prec_reg_std,0,1);
-prec_class_stdstd = nanstd(prec_class_std,0,1);
-rec_reg_stdstd = nanstd(rec_reg_std,0,1);
-rec_class_stdstd = nanstd(rec_class_std,0,1);
-f1_reg_stdstd = nanstd(f1_reg_std,0,1);
-f1_class_stdstd = nanstd(f1_class_std,0,1);
+prec_reg_stdstd = nanstd(reshape(permute(prec_reg,[1 3 2]),[],5),0,1);
+prec_class_stdstd = nanstd(reshape(permute(prec_class,[1 3 2]),[],5),0,1);
+rec_reg_stdstd = nanstd(reshape(permute(rec_reg,[1 3 2]),[],5),0,1);
+rec_class_stdstd = nanstd(reshape(permute(rec_class,[1 3 2]),[],5),0,1);
+f1_reg_stdstd = nanstd(reshape(permute(f1_reg,[1 3 2]),[],5),0,1);
+f1_class_stdstd = nanstd(reshape(permute(f1_class,[1 3 2]),[],5),0,1);
 
 
 
@@ -145,23 +145,62 @@ for i = 1:5
         gears{i},prec_class_avgavg(i),prec_class_stdstd(i),rec_class_avgavg(i),rec_class_stdstd(i),f1_class_avgavg(i),f1_class_stdstd(i))
 end
 
-%%%%% Print F1 Latex table format for Regression and Classification for all
+
+%%%%% Print Precision Latex table format for Regression and Classification for all
 %%%%% GEARS scores
-fprintf('\n\\multicolumn{6}{c}{Regression}\\\\ \\hline')
-fprintf('\n\\TextWrapCent{GEARS}{Domain} \t& Rating=1 \t& Rating=2 \t& Rating=3 \t& Rating=4 \t& Rating=5\\\\ \\hline\n')
+fprintf('\n & \\multicolumn{10}{c}{Precision}\\\\ \\hline')
+fprintf('\n & \\multicolumn{5}{c}{Regression} & \\multicolumn{5}{c}{Classification}\\\\ \\hline')
+fprintf('\n\\TextWrapCent{GEARS}{Domain} \t& Combined \t& Rating=2 \t& Rating=3 \t& Rating=4 \t& Rating=5 \t& Combined \t& Rating=2 \t& Rating=3 \t& Rating=4 \t& Rating=5\\\\ \\hline\n')
 for i = 1:5
-    fprintf('%s \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \\\\ \n',...
-        gears{i},f1_reg_avg(1,i),f1_reg_std(1,i),f1_reg_avg(2,i),f1_reg_std(2,i),f1_reg_avg(3,i),...
-                 f1_reg_std(3,i),f1_reg_avg(4,i),f1_reg_std(4,i),f1_reg_avg(5,i),f1_reg_std(5,i))
+    fprintf('%s \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \\\\ \n',...
+        gears{i},prec_reg_avgavg(i),prec_reg_stdstd(i),prec_reg_avg(2,i),prec_reg_std(2,i),prec_reg_avg(3,i),...
+                 prec_reg_std(3,i),prec_reg_avg(4,i),prec_reg_std(4,i),prec_reg_avg(5,i),prec_reg_std(5,i),...
+                 prec_class_avgavg(i),prec_class_stdstd(i),prec_class_avg(2,i),prec_class_std(2,i),prec_class_avg(3,i),...
+                 prec_class_std(3,i),prec_class_avg(4,i),prec_class_std(4,i),prec_class_avg(5,i),prec_class_std(5,i))                
 end
 fprintf('\\hline')
-fprintf('\n\\multicolumn{6}{c}{Classification}\\\\ \\hline')
-fprintf('\n\\TextWrapCent{GEARS}{Domain} \t& Rating=1 \t& Rating=2 \t& Rating=3 \t& Rating=4 \t& Rating=5\\\\ \\hline\n')
+fprintf('\n & \\multicolumn{10}{c}{Recall}\\\\ \\hline')
+fprintf('\n & \\multicolumn{5}{c}{Regression} & \\multicolumn{5}{c}{Classification}\\\\ \\hline')
+fprintf('\n\\TextWrapCent{GEARS}{Domain} \t& Combined \t& Rating=2 \t& Rating=3 \t& Rating=4 \t& Rating=5 \t& Combined \t& Rating=2 \t& Rating=3 \t& Rating=4 \t& Rating=5\\\\ \\hline\n')
 for i = 1:5
-    fprintf('%s \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \\\\ \n',...
-        gears{i},f1_class_avg(1,i),f1_class_std(1,i),f1_class_avg(2,i),f1_class_std(2,i),f1_class_avg(3,i),...
+    fprintf('%s \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \\\\ \n',...
+        gears{i},rec_reg_avgavg(i),rec_reg_stdstd(i),rec_reg_avg(2,i),rec_reg_std(2,i),rec_reg_avg(3,i),...
+                 rec_reg_std(3,i),rec_reg_avg(4,i),rec_reg_std(4,i),rec_reg_avg(5,i),rec_reg_std(5,i),...
+                 rec_class_avgavg(i),rec_class_stdstd(i),rec_class_avg(2,i),rec_class_std(2,i),rec_class_avg(3,i),...
+                 rec_class_std(3,i),rec_class_avg(4,i),rec_class_std(4,i),rec_class_avg(5,i),rec_class_std(5,i))
+end
+fprintf('\\hline')
+fprintf('\n & \\multicolumn{10}{c}{$F_1$}\\\\ \\hline')
+fprintf('\n & \\multicolumn{5}{c}{Regression} & \\multicolumn{5}{c}{Classification}\\\\ \\hline')
+fprintf('\n\\TextWrapCent{GEARS}{Domain} \t& Combined \t& Rating=2 \t& Rating=3 \t& Rating=4 \t& Rating=5 \t& Combined \t& Rating=2 \t& Rating=3 \t& Rating=4 \t& Rating=5\\\\ \\hline\n')
+for i = 1:5
+    fprintf('%s \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \\\\ \n',...
+        gears{i},f1_reg_avgavg(i),f1_reg_stdstd(i),f1_reg_avg(2,i),f1_reg_std(2,i),f1_reg_avg(3,i),...
+                 f1_reg_std(3,i),f1_reg_avg(4,i),f1_reg_std(4,i),f1_reg_avg(5,i),f1_reg_std(5,i),...
+                 f1_class_avgavg(i),f1_class_stdstd(i),f1_class_avg(2,i),f1_class_std(2,i),f1_class_avg(3,i),...
                  f1_class_std(3,i),f1_class_avg(4,i),f1_class_std(4,i),f1_class_avg(5,i),f1_class_std(5,i))
 end
+
+% %%%%% Print F1 Latex table format for Regression and Classification for all
+% %%%%% GEARS scores
+% fprintf('\n\\multicolumn{6}{c}{Regression}\\\\ \\hline')
+% fprintf('\n\\TextWrapCent{GEARS}{Domain} \t& Rating=1 \t& Rating=2 \t& Rating=3 \t& Rating=4 \t& Rating=5\\\\ \\hline\n')
+% for i = 1:5
+%     fprintf('%s \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \\\\ \n',...
+%         gears{i},f1_reg_avg(1,i),f1_reg_std(1,i),f1_reg_avg(2,i),f1_reg_std(2,i),f1_reg_avg(3,i),...
+%                  f1_reg_std(3,i),f1_reg_avg(4,i),f1_reg_std(4,i),f1_reg_avg(5,i),f1_reg_std(5,i))
+% end
+% fprintf('\\hline')
+% fprintf('\n\\multicolumn{6}{c}{Classification}\\\\ \\hline')
+% fprintf('\n\\TextWrapCent{GEARS}{Domain} \t& Rating=1 \t& Rating=2 \t& Rating=3 \t& Rating=4 \t& Rating=5\\\\ \\hline\n')
+% for i = 1:5
+%     fprintf('%s \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \t& %1.2f$\\pm$%1.2f \\\\ \n',...
+%         gears{i},f1_class_avg(1,i),f1_class_std(1,i),f1_class_avg(2,i),f1_class_std(2,i),f1_class_avg(3,i),...
+%                  f1_class_std(3,i),f1_class_avg(4,i),f1_class_std(4,i),f1_class_avg(5,i),f1_class_std(5,i))
+% end
+
+
+
 
 %%
 h1=figure('Color',[1,1,1]);

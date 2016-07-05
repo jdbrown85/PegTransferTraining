@@ -1,6 +1,6 @@
 function plotForces(obj, range)
     for i = 1:length(obj)
-        figure
+%         CreatFig
         clf;
             if nargin == 1
             	plot(obj(i).plot_time,obj(i).forces);

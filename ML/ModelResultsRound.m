@@ -157,7 +157,7 @@ function [exact_reg,exact_class,near_reg,near_class,prec_reg,prec_class,rec_reg,
         prec_class(:,i) = p;
         rec_class(:,i) = r;
         f1_class(:,i) = f1;
-        pe_class(:,i) = diag(m');         
+        pe_class(:,i) = sum(m',1);         
     end
     
     %%
