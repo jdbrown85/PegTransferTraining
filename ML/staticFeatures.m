@@ -53,7 +53,10 @@ function feat = staticFeatures(data,rounding)
 %     % Construct an FDESIGN object and call its BUTTER method.
 %     h  = fdesign.lowpass(Fpass, Fstop, Apass, Astop, Fs);
 %     fLP = design(h, 'butter', 'MatchExactly', match);
-  
+
+
+% load file that contains relevant features
+load('Relevant_features.mat')
     %%
     feat(length(data)) = struct();
 
@@ -143,37 +146,87 @@ function feat = staticFeatures(data,rounding)
             accHProd,fAcc1HProd,fAcc2HProd,accProd,fAcc1Prod,fAcc2Prod,accLProd,fAcc1LProd,fAcc2LProd... %product features
             r1, p1, r2, p2, r3, p3, ... %orientation data (roll and pitch)
             diff(r1), diff(p1), diff(r2), diff(p2), diff(r3), diff(p3)};
+
         
-        feat(k).mean = extract_feature(@(x) mean(x), raw_featuresABS{:}); %compute mean of all features
-        feat(k).std = extract_feature(@std, raw_features{:}); %compute standard dev of all features 
-        feat(k).min = extract_feature(@min, raw_features{:}); %compute min of all features
-        feat(k).max = extract_feature(@max, raw_features{:}); %compute max of all features 
-%         feat(k).max = extract_feature(@max, raw_features{:}); %compute max of all features
-        feat(k).rms = extract_feature(@rms, raw_features{:}); %compute rms of all features
+        raw_features = {data(t).forces(:,1),data(t).forces(:,2),data(t).forces(:,3),fMag,... %force data and their magnitude 
+            acc1,acc1H,acc1L,acc2,acc2H,acc2L,acc3,acc3H,acc3L,... %acceleration data (total, high, low)
+            accHProd,fAcc1HProd,fAcc2HProd,accProd,fAcc1Prod,fAcc2Prod,accLProd,fAcc1LProd,fAcc2LProd... %product features
+            r1, p1, r2, p2, r3, p3, ... %orientation data (roll and pitch)
+            diff(r1), diff(p1), diff(r2), diff(p2), diff(r3), diff(p3)};
+        
+%         feat(k).mean = extract_feature(@(x) mean(x), raw_featuresABS{:}); %compute mean of all features
+%         feat(k).std = extract_feature(@std, raw_features{:}); %compute standard dev of all features 
+%         feat(k).min = extract_feature(@min, raw_features{:}); %compute min of all features
+%         feat(k).max = extract_feature(@max, raw_features{:}); %compute max of all features 
+% %         feat(k).max = extract_feature(@max, raw_features{:}); %compute max of all features
+%         feat(k).rms = extract_feature(@rms, raw_features{:}); %compute rms of all features
+%         %feat(k).tss = extract_feature(@(x) sum(x.^2), raw_features{:}); %compute sum of squares of all features
+%         feat(k).tss = extract_feature(@(x) sum(bsxfun(@minus,x,mean(x)).^2), raw_features{:}); %compute sum of squares of all features
+% 
+%         %force integral
+% %         timeVec = 0:1/3000:data(1).duration;        
+%         feat(k).int = [extract_feature(@(x) trapz(0:1/3000:(length(x)-1)/3000,x), raw_featuresABS{1:22});... 
+%                        extract_feature(@(x) trapz(0:1/100:(length(x)-1)/100,x), raw_featuresABS{23:34})];
+%         
+%         
+% 		%range
+% 		feat(k).range = feat(k).max - feat(k).min; %compute range of all features
+% 
+% 		% Time
+%         feat(k).total_time = data(t).duration; %compute total time of trial
+%         feat(k).time = (find(fMag>0.25,1,'last') - find(fMag>0.25, 1))/3000; %compute active trial time (based on force reading)
+%         
+%         feat(k).sqrt_total_time = sqrt(feat(k).total_time); % compute sqrt(time)
+%         feat(k).sqrt_time = sqrt(feat(k).time);
+%         
+%         feat(k).log_total_time = log10(feat(k).total_time);
+%         feat(k).log_time = log10(feat(k).time);
+
+        feat(k).mean = extract_feature(@(x) mean(x), raw_featuresABS{imp_feats.mean}); %compute mean of all features
+        feat(k).std = extract_feature(@std, raw_features{imp_feats.std}); %compute standard dev of all features 
+        feat(k).min = extract_feature(@min, raw_features{imp_feats.min}); %compute min of all features
+        feat(k).max = extract_feature(@max, raw_features{imp_feats.max}); %compute max of all features
+        minr = extract_feature(@min, raw_features{imp_feats.range}); %compute min of features
+        maxr = extract_feature(@max, raw_features{imp_feats.range}); %compute max of all features
+        %feat(k).max = extract_feature(@max, raw_features{:}); %compute max of all features
+        feat(k).rms = extract_feature(@rms, raw_features{imp_feats.rms}); %compute rms of all features
         %feat(k).tss = extract_feature(@(x) sum(x.^2), raw_features{:}); %compute sum of squares of all features
-        feat(k).tss = extract_feature(@(x) sum(bsxfun(@minus,x,mean(x)).^2), raw_features{:}); %compute sum of squares of all features
+        feat(k).tss = extract_feature(@(x) sum(bsxfun(@minus,x,mean(x)).^2), raw_features{imp_feats.tss}); %compute sum of squares of all features
 
         %force integral
-%         timeVec = 0:1/3000:data(1).duration;        
-        feat(k).int = [extract_feature(@(x) trapz(0:1/3000:(length(x)-1)/3000,x), raw_featuresABS{1:22});... 
-                       extract_feature(@(x) trapz(0:1/100:(length(x)-1)/100,x), raw_featuresABS{23:34})];
+        %timeVec = 0:1/3000:data(1).duration;        
+        feat(k).int = [extract_feature(@(x) trapz(0:1/3000:(length(x)-1)/3000,x), raw_featuresABS{imp_feats.int_3000});... 
+                       extract_feature(@(x) trapz(0:1/100:(length(x)-1)/100,x), raw_featuresABS{imp_feats.int_100})];
         
         
+        % total_time
+        total_time = data(t).duration; %compute total time of trial
 		%range
-		feat(k).range = feat(k).max - feat(k).min; %compute range of all features
-
-		% Time
-        feat(k).total_time = data(t).duration; %compute total time of trial
+        if ~isempty(imp_feats.range)
+		feat(k).range = maxr - minr; %compute range of all features
+        end
+		%Time
+        if ~isempty(imp_feats.total_time)
+        feat(k).total_time = total_time;
+        end
+        if ~isempty(imp_feats.time)
         feat(k).time = (find(fMag>0.25,1,'last') - find(fMag>0.25, 1))/3000; %compute active trial time (based on force reading)
-        
-        feat(k).sqrt_total_time = sqrt(feat(k).total_time); % compute sqrt(time)
+        end
+        if ~isempty(imp_feats.sqrt_total_time)
+        feat(k).sqrt_total_time = sqrt(total_time); % compute sqrt(time)
+        end
+        if ~isempty(imp_feats.sqrt_time)
         feat(k).sqrt_time = sqrt(feat(k).time);
-        
-        feat(k).log_total_time = log10(feat(k).total_time);
+        end
+        if ~isempty(imp_feats.log_total_time)
+        feat(k).log_total_time = log10(total_time);
+        end
+        if ~isempty(imp_feats.log_time)
         feat(k).log_time = log10(feat(k).time);
-        % add features for idle time at beginning
-        % add feature for percentage of time active/idle
-        
+        end
+%         add features for idle time at beginning
+%         add feature for percentage of time active/idle
+%         
 %         [feature_vector, ratings] = featureVector(features)
 %         coeff = pca(
         

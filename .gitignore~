@@ -1,0 +1,7 @@
+SavedData
+NewData/
+Surveys/
+SurveyResults/
+*.eps
+*.tikz
+

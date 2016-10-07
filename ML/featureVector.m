@@ -2,6 +2,7 @@ function [vector, ratings, index] = featureVector(feats)
     
     fFields = sort(fields(feats)); %sort features in alphabetical order
     featFields = fFields(~strcmpi(fFields, 'gears') & ~strcmpi(fFields, 'fam')); %remove GEARS and fam from feature set
+    all_feats = cell(1, 277);
     
     fieldCols = zeros(size(featFields));  %create a vector of zeros the same size as list of features in featFields
     vecRows = length(feats); %variable that contains the number of actual features
@@ -32,6 +33,47 @@ function [vector, ratings, index] = featureVector(feats)
             'Right Tool Roll Rate', 'Right Tool Pitch Rate',... 
             'Camera Roll Rate', 'Camera Pitch Rate',... 
             'Left Tool Roll Rate', 'Left Tool Pitch Rate'};
+        
+    counter = 1;
+    for i = 1:length(featFields)
+        if strcmp(featFields{i}, 'total_time')
+            all_feats{1, counter} = featFields{i};
+            counter = counter + 1;
+           continue 
+        end
+        if strcmp(featFields{i}, 'time')
+            all_feats{1, counter} = featFields{i};
+            counter = counter + 1;
+            continue
+        end
+        if strcmp(featFields{i}, 'sqrt_total_time')
+            all_feats{1, counter} = featFields{i};
+            counter = counter + 1;
+            continue
+        end
+        if strcmp(featFields{i}, 'sqrt_time')
+            all_feats{1, counter} = featFields{i};
+            counter = counter + 1;
+            continue
+        end
+        if strcmp(featFields{i}, 'log_total_time')
+            all_feats{1, counter} = featFields{i};
+            counter = counter + 1;
+            continue
+        end
+        if strcmp(featFields{i}, 'log_time')
+            all_feats{1, counter} = 'log_time';
+            counter = counter + 1;
+            continue
+        end
+        if strcmp(featFields{i}, 'gears')
+            continue
+        end
+        for j = 1:34
+            all_feats{1, counter} = strcat(featFields{i}, '_', raw_features{j});
+            counter = counter + 1;
+        end
+    end
     for i = 1:length(featFields)
         vector(:, col:col+fieldCols(i)-1) = [feats.(featFields{i})]';
         for j = 0:fieldCols(i)-1
@@ -39,6 +81,7 @@ function [vector, ratings, index] = featureVector(feats)
         end
         col = col+fieldCols(i);
     end
-    
+    all_feats =  all_feats(~cellfun('isempty', all_feats));
+    %save('feats.mat', 'all_feats', 'raw_features')
     ratings = [feats.gears]';
 end
